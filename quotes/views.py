@@ -48,7 +48,7 @@ def index(request:  HttpRequest) -> HttpResponse:
     
     context = generate_random_quote()
 
-    return render(request, "index.html", context)
+    return render(request, "quotes/index.html", context)
     
     
     
@@ -59,7 +59,7 @@ def quote(request: HttpRequest) -> HttpResponse:
     
     context = generate_random_quote()
     
-    return render(request, "quote.html", context)
+    return render(request, "quotes/quote.html", context)
 
 
 def show_all(request:HttpResponse) -> HttpResponse:
@@ -70,7 +70,7 @@ def show_all(request:HttpResponse) -> HttpResponse:
     
     context = { "combined": combined_list }
     
-    return render(request, "show_all.html", context)
+    return render(request, "quotes/show_all.html", context)
 
 
 def about(request: HttpRequest) -> HttpResponse:
@@ -78,4 +78,4 @@ def about(request: HttpRequest) -> HttpResponse:
     
     context = { "bio": celebs_bio }
     
-    return render(request, "about.html", context)
+    return render(request, "quotes/about.html", context)
