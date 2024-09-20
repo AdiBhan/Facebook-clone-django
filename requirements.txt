@@ -8,11 +8,14 @@ cycler==0.12.1
 debugpy==1.8.5
 decorator==5.1.1
 distlib==0.3.8
+dj-database-url==2.2.0
 Django==5.1.1
+django-heroku==0.3.1
 et-xmlfile==1.1.0
 executing==2.1.0
 filelock==3.16.0
 fonttools==4.53.1
+gunicorn==23.0.0
 ipykernel==6.29.5
 ipython==8.27.0
 jedi==0.19.1
@@ -32,6 +35,7 @@ pipenv==2024.0.1
 platformdirs==4.3.2
 prompt_toolkit==3.0.47
 psutil==6.0.0
+psycopg2==2.9.9
 pure_eval==0.2.3
 Pygments==2.18.0
 pyparsing==3.1.4
@@ -45,6 +49,8 @@ sqlparse==0.5.1
 stack-data==0.6.3
 tornado==6.4.1
 traitlets==5.14.3
+typing_extensions==4.12.2
 tzdata==2024.1
 virtualenv==20.26.4
 wcwidth==0.2.13
+whitenoise==6.7.0
