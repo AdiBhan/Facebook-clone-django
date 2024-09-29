@@ -1,4 +1,4 @@
-# CS412 Quotes App
+# CS412 App
 
 A basic Quotes Web Application built using Django templates.
 

@@ -41,7 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "hw",  # New app
-    "quotes"
+    "quotes",
+    "formdata",
+    "restaurant"
 ]
 
 MIDDLEWARE = [

@@ -22,5 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("hw/", include('hw.urls')),  # New Path
     path("", include('hw.urls')),
-    path("quotes/", include('quotes.urls')) # New Path
+    path("quotes/", include('quotes.urls')), # New Path
+    path("formdata/", include('formdata.urls')),
+    path("restaurant/", include('restaurant.urls'))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
