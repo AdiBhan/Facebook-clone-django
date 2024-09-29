@@ -24,11 +24,11 @@ menu:object = {
            
         }
 
-def home(request: HttpRequest) -> HttpResponse:
+def main(request: HttpRequest) -> HttpResponse:
     ''' Function to return the home page of the restaurant app. '''
     
     
-    return render(request, 'restaurant/home.html')
+    return render(request, 'restaurant/main.html')
 
 
 

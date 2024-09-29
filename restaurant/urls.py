@@ -7,7 +7,7 @@ urlpatterns:list = [
     
     
     # URL for the home page, mapped to /
-    path('', views.home, name="home"),
+    path('', views.main, name="main"),
     
     # URL for the quotes page, mapped to /confirmation/
     path('confirmation/', views.confirmation, name="confirmation"),
