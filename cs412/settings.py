@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
-import django_heroku
+
 from pathlib import Path
 
 
@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-=7iqj0@not!d_+d2tdhx)%fr&e_z2_0n*m59!!!oh9q5ef$8pk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["https://cs412-quotes-app-7a56314b11da.herokuapp.com/"]
+ALLOWED_HOSTS = ["https://cs412-quotes-app-7a56314b11da.herokuapp.com/",'127.0.0.1', 'localhost',]
 
 
 # Application definition
@@ -136,4 +136,3 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-django_heroku.settings(locals())
