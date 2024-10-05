@@ -18,6 +18,7 @@
         </thead>
         <tbody>
             {% for profile in profiles %}
+            <!-- For each record in the Profile table we will display all attributes (first_name, last_name, city, email_adress, profile_image)-->
                 <tr>
                     <td>{{ profile.first_name }}</td>
                     <td>{{ profile.last_name }}</td>
