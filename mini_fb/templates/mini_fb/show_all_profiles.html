@@ -3,9 +3,8 @@
 
 {% extends 'mini_fb/base.html' %}
 
-{% block content %}
-  
 
+{% block content %}
     <table border="1">
         <thead>
             <tr>
@@ -18,13 +17,13 @@
         </thead>
         <tbody>
             {% for profile in profiles %}
-            <!-- For each record in the Profile table we will display all attributes (first_name, last_name, city, email_adress, profile_image)-->
+            <!-- For each record in the Profile table we will display all attributes (first_name, last_name, city, email_address, profile_image)-->
                 <tr>
-                    <td>{{ profile.first_name }}</td>
+                    <td><a href="{% url 'show_profile' profile.pk %}">{{ profile.first_name }}</a></td>
                     <td>{{ profile.last_name }}</td>
                     <td>{{ profile.city }}</td>
                     <td>{{ profile.email_address }}</td>
-                    <td><img src="{{ profile.profile_image_url }}" alt="Profile Image" width="100"></td>
+                    <td><a href="{% url 'show_profile' profile.pk %}"><img src="{{ profile.profile_image_url }}" alt="Profile Image" width="100"></a></td>
                 </tr>
             {% endfor %}
         </tbody>

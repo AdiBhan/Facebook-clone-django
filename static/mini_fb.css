@@ -1,4 +1,4 @@
-/* style.css */
+/* mini_fb.css */
 
 /* General styling */
 body {
@@ -11,6 +11,7 @@ body {
 .container {
     width: 80%;
     margin: 0 auto;
+    background-color: blue;
 }
 
 header {
@@ -21,10 +22,6 @@ header {
     margin: 0;
     font-size: 2.5em;
 }
-
-
-
-
 
 main {
     padding: 20px 0;

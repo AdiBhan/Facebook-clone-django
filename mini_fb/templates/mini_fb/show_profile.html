@@ -1,0 +1,40 @@
+<!-- mini_fb/templates/show_profile.html This is base page which others will inherit from -->
+
+{% extends 'mini_fb/base.html' %}
+{% comment %}Using inline styling, external sheet not being read for this page{% endcomment %}
+{% block content %}
+  <div style="max-width: 600px; margin: 20px auto; padding: 20px; text-align: center; background-color:	#E8E8E8;">
+    <img style="width: 200px; height: 200px; border-radius: 50%;" src="{{ profile.profile_image_url }}" alt="{{ profile.first_name }}'s profile picture" />
+    <h2>{{ profile.first_name }} {{ profile.last_name }}</h2>
+    <table style="width: 100%; margin-top: 10px;">
+      <tr>
+        <td>
+          <strong>Email:</strong>
+        </td>
+        <td>{{ profile.email_address }}</td>
+      </tr>
+      <tr>
+        <td>
+          <strong>Location:</strong>
+        </td>
+        <td>{{ profile.city }}</td>
+      </tr>
+
+      <a href="{% url 'create_status' profile.pk %}">Add new Comment/Status Message</a>
+    </table>
+
+    {% if status_messages %}
+      <h1 style="font-size: 20px;">Comments</h1>
+      {% for message in status_messages %}
+        <div style="margin-bottom: 10px; background-color: #f0f0f0; padding: 10px; border-radius: 5px;">
+          {{ message.message }}
+
+          <a style="color: #666; font-size: 14px;">{{ message.timestamp }}</a>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No status messages yet.</p>
+    {% endif %}
+    <a href="{% url 'show_all_profiles' %}" style="display: inline-block; margin-top: .2rem; color: #333; background-color: #f0f0f0; padding: 10px 5px; ">Return to Directory</a>
+  </div>
+{% endblock %}

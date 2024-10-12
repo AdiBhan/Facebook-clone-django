@@ -1,12 +1,46 @@
-
 from django.shortcuts import render
-from . models import *
-from django.views.generic import ListView
-# Create your views here.
-
-
+from .models import Profile, StatusMessage
+from django.views.generic import ListView, DetailView, CreateView
+from .forms import CreateProfileForm, CreateStatusMessageForm
+from django.urls import reverse, reverse_lazy
 class ShowAllProfilesView(ListView):
     ''' a view to show all Profiles from template html file show_all_profiles'''
-    model = Profile ## references model found in models.py
-    template_name = 'mini_fb/show_all_profiles.html'  # references HTML webpage to display UI of webpage found in templates/mini_fb/show_all.html
-    context_object_name = 'profiles' # profiles references the actual DB table which we can use in the HTML page to display records
+    model = Profile
+    template_name = 'mini_fb/show_all_profiles.html'
+    context_object_name = 'profiles'
+
+class ShowProfilePageView(DetailView):
+    ''' View renders one record (Profile) from Profile model'''
+    model = Profile
+    template_name = 'mini_fb/show_profile.html'
+    context_object_name = 'profile'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        profile = self.object 
+        context['status_messages'] = profile.get_status_messages()
+        return context
+    
+    
+class CreateProfileView(CreateView):
+    ''' View to create a new Profile '''
+    model = Profile
+    form_class = CreateProfileForm
+    template_name = 'mini_fb/create_profile_form.html'
+
+    
+class CreateStatusMessageView(CreateView):
+    form_class = CreateStatusMessageForm
+    template_name = 'mini_fb/create_status_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['profile'] = Profile.objects.get(pk=self.kwargs['pk'])
+        return context
+
+    def form_valid(self, form):
+        form.instance.profile = Profile.objects.get(pk=self.kwargs['pk'])
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('show_profile', kwargs={'pk': self.kwargs['pk']})
