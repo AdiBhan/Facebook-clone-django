@@ -32,3 +32,16 @@ class StatusMessage(models.Model):
         ''' Replaces built-in two string method with custom one that returns first, last name and message. '''
         return f"{self.profile.first_name} {self.profile.last_name}: {self.message[:50]}..."
     
+    def get_images(self):
+        return self.image_set.all()
+
+class Image(models.Model):
+    # Image model for mini_fb. Contains a timestamp, image file, and a foreign key relationship to StatusMessage.
+    
+    timestamp = models.DateTimeField(default=timezone.now)
+    status_message = models.ForeignKey(StatusMessage, on_delete=models.CASCADE, related_name='images') 
+    image_file = models.ImageField(upload_to='imgs/')  # No related_name needed here
+
+    
+    
+    
