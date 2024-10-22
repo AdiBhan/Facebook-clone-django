@@ -1,6 +1,6 @@
-# CS412 App
+# Django
 
-A basic Quotes Web Application built using Django templates.
+Building  web small applications in Django.
 
 ## Prerequisites
 
