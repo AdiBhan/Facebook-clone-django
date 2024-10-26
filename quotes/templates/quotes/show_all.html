@@ -1,0 +1,11 @@
+
+ <!-- ./quotes/templates/quotes/quote.html Shows all quotes and images{% endcomment  -->
+
+{% extends 'quotes/base.html' %} {% block content %}
+        {% for item in combined %}
+        <div class="quote-container">
+            <h1 class="quote-text">"{{ item.quote }}"</h1>
+            <img src="{{ item.image }}" alt="Image related to the quote" class="quote-image">
+        </div>
+    {% endfor %}
+    {% endblock %}

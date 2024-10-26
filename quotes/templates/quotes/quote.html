@@ -1,0 +1,11 @@
+
+<!-- ./quotes/templates/quotes/quote.html Shows random image and quote{% endcomment  -->
+
+{% extends 'quotes/base.html' %}
+
+{% block content %}
+    <div class="quote-container">
+        <h1 class="quote-text">"{{ quote }}"</h1>
+        <img src="{{ image }}" alt="Image related to the quote" class="quote-image">
+    </div>
+{% endblock %}

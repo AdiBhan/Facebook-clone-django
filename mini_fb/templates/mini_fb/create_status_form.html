@@ -1,0 +1,29 @@
+<!-- templates/mini_fb/create_status_form.html -->
+
+
+{% extends 'mini_fb/base.html' %}
+
+{% block content %}
+<div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+<h2 style="text-align: center; margin-bottom: 20px; margin-top:30px">Create New Status Message</h2>
+<form enctype="multipart/form-data" method="post" action="{% url 'create_status' profile.pk %}" style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #E8E8E8; border-radius: 8px;">
+    {% csrf_token %}
+    
+    <div style="margin-bottom: 15px; ">
+      <strong>  {{ form.as_p }} </strong>
+      <input style="display: block; outline: none;" type="file" name = "files" multiple />
+    </div>
+
+    
+    <button type="submit" style="background-color: brown; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; text-align: center;">
+        Post Status
+    </button>
+    <form action="{% url 'show_profile' user.pk %}" method="get" style="margin-top: 10px;">
+      <button type="submit" style="background-color: gray; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; text-align: center;">
+          Cancel
+      </button>
+    </form>
+
+</form>
+</div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'mini_fb/base.html' %}
+
+{% block content %}
+    <div style="max-width: 800px; margin: 20px auto; padding: 10px; text-align: center;">
+        <h1>All Profiles</h1>
+        <table border="1" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <thead>
+                <tr style="background-color: #f0f0f0;">
+                    <th style="padding: 10px;">First Name</th>
+                    <th style="padding: 10px;">Last Name</th>
+                    <th style="padding: 10px;">City</th>
+                    <th style="padding: 10px;">Email</th>
+                    <th style="padding: 10px;">Profile</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for profile in profiles %}
+                    <tr style="text-align: center;">
+                        <td style="padding: 8px;"><a href="{% url 'show_profile' profile.pk %}" style="color: #007bff; text-decoration: none;">{{ profile.first_name }}</a></td>
+                        <td style="padding: 8px;">{{ profile.last_name }}</td>
+                        <td style="padding: 8px;">{{ profile.city }}</td>
+                        <td style="padding: 8px;">{{ profile.email_address }}</td>
+                        <td style="padding: 8px;"><a href="{% url 'show_profile' profile.pk %}"><img src="{{ profile.profile_image_url }}" alt="Profile Image" width="80" style="border-radius: 50%;"></a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

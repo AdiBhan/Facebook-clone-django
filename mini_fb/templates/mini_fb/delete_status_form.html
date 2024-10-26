@@ -1,0 +1,25 @@
+{% extends 'mini_fb/base.html' %}
+
+{% block content %}
+<div style="text-align: center; padding: 20px;">
+    <h2>Delete Status Message</h2>
+    <p>Are you sure you want to delete the following message?</p>
+    <div style="background-color: #E8E8E8; padding: 10px; border-radius: 5px;">
+        <strong>{{ status_message.message }}</strong>
+    </div>
+
+    <form method="post" action="{% url 'delete_status' status_message.pk %}">
+        {% csrf_token %}
+        <button type="submit" style="background-color: red; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+            Confirm Delete
+        </button>
+    </form>
+
+    <form method="get" action="{% url 'show_profile' status_message.profile.pk %}">
+        <button type="submit" style="background-color: gray; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+            Cancel
+        </button>
+    </form>
+     
+</div>
+{% endblock %}

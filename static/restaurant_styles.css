@@ -1,0 +1,95 @@
+/* General styling */
+body{
+    background-color: darkgoldenrod;
+    font-family: Arial, sans-serif;
+    font-size: 2em; 
+    justify-content: center;
+    text-align: center;
+   
+}
+
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 1rem;
+}
+
+header h1 {
+    margin: 0;
+}
+
+/* Nav bar styles from quotes/styles.css */
+
+nav {
+    background-color: #333; 
+    color: #fff; 
+    padding: 20px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    text-align: center; 
+}
+
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+
+nav ul li {
+    display: inline-block; 
+    margin-right: 30px;
+    font-size: 1.5em; 
+}
+
+
+nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    padding: 10px 15px; 
+
+}
+main {
+    padding: 2rem;
+}
+/* Form Styles */
+form {
+    margin-top: 1rem;
+}
+form h3 {
+    margin-top: 1rem;
+}
+form h2, form h3 {
+    margin-top: 0;
+    color: #282828;
+}
+
+
+form textarea {
+    width: 20%;
+    height: 10%;
+    padding: 10px;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+form input[type="text"],
+form input[type="email"] {
+    width: 20%;
+    padding: 10px;
+    margin-bottom: 10px;
+
+    border-radius: 4px;
+}
+
+form input[type="submit"] {
+    background-color: #027306;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 25px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.) inset;
+    
+
+}

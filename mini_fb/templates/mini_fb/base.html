@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini FB</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'mini_fb.css' %}">
+</head>
+<body style="font-family: Arial, sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh;">
+
+    <header style="background-color: #333; color: white; padding: 20px; text-align: center;">
+        <h1 style="margin: 0; font-size: 28px;">Welcome to Mini FB</h1>
+        <nav style="margin-top: 10px;">
+            <a href="{% url 'show_all_profiles' %}" style="color: white; text-decoration: none; margin: 0 10px;">View Profiles</a>
+            <a href="{% url 'create_profile' %}" style="color: white; text-decoration: none; margin: 0 10px;">Create Profile</a>
+        </nav>
+    </header>
+
+    <div style="flex: 1; max-width: 800px; margin: 20px auto; padding: 20px;">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <footer style="background-color: #333; color: white; text-align: center; padding: 10px;">
+        All rights reserved. Mini FB 2024 by Adi Bhan
+    </footer>
+
+</body>
+</html>

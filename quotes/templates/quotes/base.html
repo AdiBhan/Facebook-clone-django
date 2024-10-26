@@ -1,0 +1,25 @@
+<!-- quotes/templates/base.html This is base page which others will inherit from-->
+
+<html>
+  <head>
+    <title>Quotes page</title>
+   
+    <link rel="stylesheet" href="/static/quotes_styles.css" />
+  </head>
+
+  <body>
+    <nav>
+      <ul>
+        
+        <li><a href="{% url 'index' %}">Home</a></li>
+        <li><a href="{% url 'quote' %}">Quote</a></li>
+        <li><a href="{% url 'show_all' %}">Show all</a></li>
+        <li><a href="{% url 'about' %}">About</a></li>
+  
+      </ul>
+      <hr />
+    </nav>
+    {% block content %}
+    {% endblock%}
+  </body>
+</html>

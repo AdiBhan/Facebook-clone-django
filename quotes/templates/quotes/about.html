@@ -1,0 +1,17 @@
+<!-- ./quotes/templates/quotes/about.html Shows about information about quote and author -->
+
+{% extends 'quotes/base.html' %}
+
+{% block content %}
+    <div class="quote-container">
+        <h1 class="quote-text">About the Authors</h1>
+        {% for person in bio %}
+            <div class="person-info">
+                <h3 class="quote-text">{{ person.name }}</h3>
+                <img src="{{ person.image }}" alt="{{ person.name }}" class="quote-image">
+                <p>{{ person.bio }}</p>
+            </div>
+            <hr> <!-- Separator between people -->
+        {% endfor %}
+    </div>
+{% endblock %}

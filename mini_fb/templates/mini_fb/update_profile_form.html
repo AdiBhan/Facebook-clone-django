@@ -1,0 +1,45 @@
+{% extends 'mini_fb/base.html' %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 20px auto; padding: 20px; background-color: #E8E8E8; border-radius: 8px;">
+    <h2 style="text-align: center; margin-bottom: 20px;">Update Profile</h2>
+    <form method="post">
+        {% csrf_token %}
+        
+        <div style="margin-bottom: 15px;">
+            <label for="id_first_name"><strong>First Name:</strong></label>
+            {{ form.first_name }}
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label for="id_last_name"><strong>Last Name:</strong></label>
+            {{ form.last_name }}
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label for="id_city"><strong>City:</strong></label>
+            {{ form.city }}
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label for="id_email_address"><strong>Email Address:</strong></label>
+            {{ form.email_address }}
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label for="id_profile_image_url"><strong>Profile Image URL:</strong></label>
+            {{ form.profile_image_url }}
+        </div>
+        
+        <button type="submit" style="background-color: brown; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+            Update Profile
+        </button>
+        
+        <form action="{% url 'show_profile' user.pk %}" method="get" style="margin-top: 10px;">
+            <button type="submit" style="background-color: gray; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; text-align: center;">
+                Cancel
+            </button>
+    
+    </form>
+</div>
+{% endblock %}

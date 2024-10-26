@@ -1,0 +1,21 @@
+<!-- hw/templates/base.html This is base page which others will inherit from-->
+<html>
+  <head>
+    <title>Hello, World!</title>
+    {% comment %} can also use  {% endcomment %}
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+
+  <body>
+    <nav>
+      <ul>
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li><a href="{% url 'about' %}">About</a></li>
+        <li><a href="">Survey</a></li>
+      </ul>s
+      <hr />
+    </nav>
+    {% block content %}
+    {% endblock%}
+  </body>
+</html>

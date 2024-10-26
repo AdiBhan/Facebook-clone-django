@@ -1,0 +1,21 @@
+<!-- templates/mini_fb/create_profile_form.html -->
+
+{% extends 'mini_fb/base.html' %}
+
+{% block content %}
+<div style="display: flex; justify-content: center; align-items: center; flex-direction: column; min-height: 80vh;">
+    <h2 style="text-align: center; margin-bottom: 20px; margin-top: 30px;">Create New Profile</h2>
+    <form method="post" style="max-width: 600px; margin: 0 auto; padding: 20px; background-color: #E8E8E8; border-radius: 8px; text-align: center;">
+        {% csrf_token %}
+        
+        <div style="margin-bottom: 15px;">
+            <strong>{{ form.as_p }}</strong>
+        </div>
+
+        <button type="submit" style="background-color: brown; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">
+            Create Profile
+        </button>
+        <a href="{% url 'show_all_profiles' %}" style="margin-top: 10px; color: brown;">Cancel</a>
+    </form>
+</div>
+{% endblock %}

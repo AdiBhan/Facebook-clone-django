@@ -1,0 +1,24 @@
+<!-- restaurant/templates/base.html This is base page which others will inherit from-->
+
+<html>
+  <head>
+    <title>Restaurant App</title>
+   
+    <link rel="stylesheet" href="/static/restaurant_styles.css" />
+  </head>
+
+  <body>
+    <nav>
+      <ul>
+        
+        <li><a href="{% url 'main' %}">Home</a></li>
+        <li><a href="{% url 'order' %}">Order</a></li>
+  
+      </ul>
+      <hr />
+    
+    </nav>
+    {% block content %}
+    {% endblock%}
+  </body>
+</html>

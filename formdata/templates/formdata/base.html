@@ -1,0 +1,19 @@
+<!-- formdata/templates/base.html This is base page which others will inherit from-->
+<html>
+  <head>
+    <title>Form Data</title>
+    {% comment %} can also use  {% endcomment %}
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+
+  <body>
+    <nav>
+      <ul>
+ 
+      </ul>
+      <hr />
+    </nav>
+    {% block content %}
+    {% endblock%}
+  </body>
+</html>

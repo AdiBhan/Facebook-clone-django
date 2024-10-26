@@ -1,0 +1,58 @@
+{% extends 'restaurant/base.html' %}
+{% block content %}
+<div>
+    <h2>Food Form</h2>
+    <form action="{% url 'confirmation' %}" method="POST">
+        {% csrf_token %}
+        <h3>Menu</h3>
+        <label>
+            <input type="checkbox" name="hotdog" value="hotdog">
+            Hotdog ($2.99)
+        </label>
+        <br>
+        <label>
+            <input type="checkbox" name="hamburger" value="pizza">
+            Hamburger ($4.99)
+            <br>
+            <label>
+                <input type="checkbox" name="pizza_toppings" value="extra_cheese"> Extra Cheese
+            </label>
+            <label>
+                <input type="checkbox" name="pizza_toppings" value="pepperoni"> Pepperoni
+            </label>
+            <label>
+                <input type="checkbox" name="pizza_toppings" value="mushrooms"> Mushrooms
+            </label>
+        </label>
+        <br>
+        <label>
+            <input type="checkbox" name="steak" value="salad">
+            Steak ($9.99)
+        </label>
+        <br>
+        <label>
+            <input type="checkbox" name="soda" value="soda">
+            Soda ($1.49)
+        </label>
+        <br>
+        <label>
+            <input type="checkbox" name={{name}} value="{{ name }}">
+            {{ name }} ({{ price }})<br>
+           
+        </label>
+        <br><br>
+
+        <h3>Special Instructions</h3>
+        <textarea name="special_instructions" rows="4" cols="50"></textarea>
+        <br><br>
+
+        <h3>Contact Information</h3>
+        Name: <input type="text" name="name" required /><br />
+        Phone: <input type="text" name="phone" required /><br />
+        Email: <input type="email" name="email" required /><br />
+
+        <br>
+        <input type="submit" value="Order" />
+    </form>
+</div>
+{% endblock %}
