@@ -1,19 +1,24 @@
 {% extends 'mini_fb/base.html' %}
 {% comment %}Using inline styling, external sheet not being read for this page{% endcomment %}
 {% block content %}
-<div style="display: flex; justify-content: center; margin-top: 20px;">
-  <a href="{% url 'show_news_feed' profile.pk %}" style="padding: 8px 12px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px; display: flex; justify-content: center; align-items: center; width: 100px;">
-    View News Feed
-  </a>
-</div>
+{% if user.is_authenticated and user == profile.user %}
+  <div style="display: flex; justify-content: center; margin-top: 20px;">
+    <a href="{% url 'show_news_feed' profile.pk %}" style="padding: 8px 12px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px; display: flex; justify-content: center; align-items: center; width: 100px;">
+      View News Feed
+    </a>
+  </div>
+{% endif %}
+
 <div style="max-width: 90%; margin: 20px auto; padding: 20px; text-align: center; background-color: #E8E8E8;">
-    
-    
-    <!-- Profile Picture and Name -->
+    <!-- Profile Picture and Name (visible to everyone) -->
     <img style="width: 200px; height: 200px; border-radius: 50%; margin-bottom: 15px;" src="{{ profile.profile_image_url }}" alt="{{ profile.first_name }}'s profile picture" />
     <h2 style="margin-bottom: 15px;">{{ profile.first_name }} {{ profile.last_name }}</h2>
-
-    <!-- Profile Info Table -->
+    {% if user != profile.user %}
+    <div style="background-color: #ffebee; color: #c62828; padding: 10px; margin: 20px auto; max-width: 90%; text-align: center; border-radius: 4px;">
+      <strong> Note: </strong> This is not your profile. You cannot post status updates or make changes. Please login if you wish to update your profile
+     </div>
+{% endif %}
+    <!-- Profile Info Table (visible to everyone) -->
     <table style="width: 100%; margin-bottom: 20px;">
       <tr>
         <td><strong>Email:</strong></td>
@@ -25,13 +30,25 @@
       </tr>
     </table>
 
-    <!-- Action Links -->
-    <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
-      <a href="{% url 'create_status' profile.pk %}" style="padding: 8px 16px; text-decoration: none; background-color: #007bff; color: white; border-radius: 4px; font-size: 16px;">Create Status</a>
-      <a href="{% url 'update_profile' profile.pk %}" style="padding: 8px 16px; text-decoration: none; background-color: #6c757d; color: white; border-radius: 4px; font-size: 16px;">Edit Profile</a>
-    </div>
+    <!-- Action Links - Only visible to profile owner -->
+    {% if user.is_authenticated and user == profile.user %}
+      <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
+        <a href="{% url 'create_status' %}" style="padding: 8px 16px; text-decoration: none; background-color: #007bff; color: white; border-radius: 4px; font-size: 16px;">Create Status</a>
+        <a href="{% url 'update_profile' %}" style="padding: 8px 16px; text-decoration: none; background-color: #6c757d; color: white; border-radius: 4px; font-size: 16px;">Edit Profile</a>
+      </div>
+    {% endif %}
 
-    <!-- Friends Section -->
+    {% comment %} Warn user's who aren't logged in about credentials {% endcomment %}
+
+{% if user.is_authenticated and user == profile.user %}
+  <div style="display: flex; justify-content: center; margin-top: 20px;">
+    <a href="{% url 'show_news_feed' %}" style="padding: 8px 12px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px; display: flex; justify-content: center; align-items: center; width: 100px;">
+      View News Feed
+    </a>
+  </div>
+{% endif %}
+
+    <!-- Friends Section (visible to everyone) -->
     {% if profile.get_friends %}
       <h1 style="margin-bottom: 10px;">Friends</h1>
       <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-bottom: 20px;">
@@ -42,13 +59,16 @@
           </div>
         {% endfor %}
       </div>
-      <!-- View Friend Suggestions Button -->
-      <div style="text-align: center; margin-bottom: 20px;">
-        <a href="{% url 'friend_suggestions' profile.pk %}" style="padding: 8px 16px; text-decoration: none; background-color: lawngreen; color: white; border-radius: 4px; font-size: 16px;">View Friend Suggestions</a>
-      </div>
+      
+      <!-- View Friend Suggestions Button - Only visible to profile owner -->
+      {% if user.is_authenticated and user == profile.user %}
+        <div style="text-align: center; margin-bottom: 20px;">
+          <a href="{% url 'friend_suggestions' %}" style="padding: 8px 16px; text-decoration: none; background-color: lawngreen; color: white; border-radius: 4px; font-size: 16px;">View Friend Suggestions</a>
+        </div>
+      {% endif %}
     {% endif %}
 
-    <!-- Comments Section -->
+    <!-- Comments Section (status messages visible to everyone, edit/delete only for owner) -->
     {% if status_messages %}
       <h1 style="font-size: 20px; margin-bottom: 15px;">Comments</h1>
       {% for message in status_messages %}
@@ -59,16 +79,19 @@
           {% for img in message.images.all %}
             <img style="margin: 10px 0; height: 75px; width: 75px;" src="{{ img.image_file.url }}" alt="Image uploaded at {{ img.timestamp }}" />
           {% endfor %}
-          <br />
-          <a href="{% url 'update_status' message.pk %}" style="color: blue; font-size: 14px; margin-right: 10px;">Update</a>
-          <a href="{% url 'delete_status' message.pk %}" style="color: red; font-size: 14px;">Delete</a>
+          
+          {% if user.is_authenticated and user == profile.user %}
+            <br />
+            <a href="{% url 'update_status' message.pk %}" style="color: blue; font-size: 14px; margin-right: 10px;">Update</a>
+            <a href="{% url 'delete_status' message.pk %}" style="color: red; font-size: 14px;">Delete</a>
+          {% endif %}
         </div>
       {% endfor %}
     {% else %}
       <p>No status messages yet.</p>
     {% endif %}
 
-    <!-- Return to Directory Link -->
+    <!-- Return to Directory Link (visible to everyone) -->
     <div style="text-align: center; margin-top: 20px;">
       <a href="{% url 'show_all_profiles' %}" style="display: inline-block; padding: 10px 20px; text-decoration: none; color: #333; background-color: #f0f0f0; border-radius: 4px;">Return to Directory</a>
     </div>

@@ -18,7 +18,7 @@
     <button type="submit" style="background-color: brown; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; text-align: center;">
         Post Status
     </button>
-    <form action="{% url 'show_profile' user.pk %}" method="get" style="margin-top: 10px;">
+    <form action="{% url 'show_profile' profile.id %}" method="get" style="margin-top: 10px;">
       <button type="submit" style="background-color: gray; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; text-align: center;">
           Cancel
       </button>

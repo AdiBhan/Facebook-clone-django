@@ -1,4 +1,3 @@
-<!-- templates/base.html -->
 <!-- blog/templates/blog/base.html -->
 {% load static %}
 <html>
@@ -9,6 +8,36 @@
     <body>
         <header>
             <h1>Blog</h1>
+            <nav>
+                <ul>
+                    <!-- URLs that do not depend on authentication status -->
+                    <li><a href="{% url 'show_all' %}">Show All</a></li>
+                    <li><a href="{% url 'random' %}">Random</a></li>
+                
+            
+                    <!-- URLs that depend on authentication status -->
+                    {% if request.user.is_authenticated %}
+                  
+                
+                    {% else %}
+                    <li><a href="{% url 'login' %}">Log in</a></li>
+                    {% if article %}
+                    <li><a href="{% url 'create_article' pk=article.pk %}">Create Comment</a></li>
+
+                    {% endif %}
+                    {% endif %}
+                </ul>
+                <form method="POST" action = "{% url 'logout' %}">
+                    {% csrf_token%} 
+                    <input type="submit" value="Logout"/>
+                    </form>
+                <!-- show who's logged in -->
+                {% if request.user.is_authenticated %}
+                Logged in user: {{ request.user }}.
+                {% else %}
+                Not logged in.
+                {% endif %}
+            </nav>
         </header>
     
     {% block content %}
