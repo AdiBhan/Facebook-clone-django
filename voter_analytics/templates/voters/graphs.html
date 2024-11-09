@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1 style="font-size: 2rem; margin-bottom: 1rem;">Voter Statistics</h1>
+
+  <form method="get" style="margin-bottom: 1.5rem;">
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+      <div style="margin-bottom: 1rem;">
+        <label for="{{ filter_form.party_affiliation.id_for_label }}" style="font-weight: bold; margin-right: 0.5rem;">Party Affiliation:</label>
+        {{ filter_form.party_affiliation }}
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <label for="{{ filter_form.min_date_of_birth.id_for_label }}" style="font-weight: bold; margin-right: 0.5rem;">Min Date of Birth:</label>
+        {{ filter_form.min_date_of_birth }}
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <label for="{{ filter_form.max_date_of_birth.id_for_label }}" style="font-weight: bold; margin-right: 0.5rem;">Max Date of Birth:</label>
+        {{ filter_form.max_date_of_birth }}
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <label for="{{ filter_form.voter_score.id_for_label }}" style="font-weight: bold; margin-right: 0.5rem;">Voter Score:</label>
+        {{ filter_form.voter_score }}
+      </div>
+      <div style="margin-bottom: 1rem;">
+        <label style="font-weight: bold; margin-right: 0.5rem;">Voting History:</label>
+        {{ filter_form.voted_in_v20state }}
+        {{ filter_form.voted_in_v21town }}
+        {{ filter_form.voted_in_v21primary }}
+        {{ filter_form.voted_in_v22general }}
+        {{ filter_form.voted_in_v23town }}
+      </div>
+    </div>
+    <button type="submit" style="background-color: #4CAF50; color: white; padding: 0.5rem 1rem; border: none; cursor: pointer;">Filter</button>
+  </form>
+
+  <div class="row">
+    <div class="col-md-4">
+      {{ birth_year_hist_div|safe }}
+    </div>
+    <div class="col-md-4">
+      {{ party_affiliation_pie_div|safe }}
+    </div>
+    <div class="col-md-4">
+      {{ election_participation_hist_div|safe }}
+    </div>
+  </div>
+{% endblock %}

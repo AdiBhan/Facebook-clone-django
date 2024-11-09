@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1 style="font-size: 2rem; margin-bottom: 1rem;">Voter List</h1>
+
+  <form method="get" style="margin-bottom: 1rem;">
+    {{ filter_form.as_p }}
+    <button type="submit" style="background-color: #4CAF50; color: white; padding: 0.5rem 1rem; border: none; cursor: pointer;">Filter</button>
+  </form>
+
+  <table style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr style="background-color: #f1f1f1;">
+        <th style="padding: 0.5rem; text-align: left;">First Name</th>
+        <th style="padding: 0.5rem; text-align: left;">Last Name</th>
+        <th style="padding: 0.5rem; text-align: left;">Address</th>
+        <th style="padding: 0.5rem; text-align: left;">Date of Birth</th>
+        <th style="padding: 0.5rem; text-align: left;">Party Affiliation</th>
+        <th style="padding: 0.5rem; text-align: left;">Voter Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for voter in voters %}
+        <tr style="{% cycle 'background-color: #f1f1f1;' '' %}">
+          <td style="padding: 0.5rem;"><a href="{% url 'voter' voter.pk %}" style="text-decoration: none; color: blue;">{{ voter.first_name }}</a></td>
+          <td style="padding: 0.5rem;"><a href="{% url 'voter' voter.pk %}" style="text-decoration: none; color: blue;">{{ voter.last_name }}</a></td>
+          <td style="padding: 0.5rem;">{{ voter.street_number }} {{ voter.street_name }}</td>
+          <td style="padding: 0.5rem;">{{ voter.date_of_birth }}</td>
+          <td style="padding: 0.5rem;">{{ voter.party_affiliation }}</td>
+          <td style="padding: 0.5rem;">{{ voter.voter_score }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if is_paginated %}
+    <div class="pagination" style="margin-top: 1rem; text-align: center;">
+      <span class="page-links">
+          {% if page_obj.has_previous %}
+              <a href="?page={{ page_obj.previous_page_number }}" style="text-decoration: none; color: blue;">previous</a>
+          {% endif %}
+          <span class="page-current">
+              Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+          </span>
+          {% if page_obj.has_next %}
+              <a href="?page={{ page_obj.next_page_number }}" style="text-decoration: none; color: blue;">next</a>
+          {% endif %}
+      </span>
+    </div>
+  {% endif %}
+{% endblock %}

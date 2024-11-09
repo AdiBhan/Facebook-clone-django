@@ -45,7 +45,9 @@ INSTALLED_APPS = [
     "formdata",
     "restaurant",
     "blog",
-    "mini_fb"
+    "mini_fb",
+    'marathon_analytics',
+    "voter_analytics"
 ]
 
 MIDDLEWARE = [
@@ -63,11 +65,9 @@ ROOT_URLCONF = 'cs412.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
-
         'OPTIONS': {
-            "string_if_invalid": "WARNING: {{%s}} is not a valid context variable",
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',

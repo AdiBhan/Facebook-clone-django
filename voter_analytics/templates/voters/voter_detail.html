@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1 style="font-size: 2rem; margin-bottom: 1rem;">Voter Details</h1>
+
+  <table style="width: 100%; border-collapse: collapse;">
+    <tr style="background-color: #f1f1f1;">
+      <th style="padding: 0.5rem; text-align: left;">First Name</th>
+      <td style="padding: 0.5rem;">{{ object.first_name }}</td>
+    </tr>
+    <tr>
+      <th style="padding: 0.5rem; text-align: left;">Last Name</th>
+      <td style="padding: 0.5rem;">{{ object.last_name }}</td>
+    </tr>
+    <tr style="background-color: #f1f1f1;">
+      <th style="padding: 0.5rem; text-align: left;">Address</th>
+      <td style="padding: 0.5rem;">{{ object.street_number }} {{ object.street_name }}, Apt {{ object.apartment_number }} - {{ object.zip_code }}</td>
+    </tr>
+    <tr>
+      <th style="padding: 0.5rem; text-align: left;">Date of Birth</th>
+      <td style="padding: 0.5rem;">{{ object.date_of_birth }}</td>
+    </tr>
+    <tr style="background-color: #f1f1f1;">
+      <th style="padding: 0.5rem; text-align: left;">Date of Registration</th>
+      <td style="padding: 0.5rem;">{{ object.date_of_registration }}</td>
+    </tr>
+    <tr>
+      <th style="padding: 0.5rem; text-align: left;">Party Affiliation</th>
+      <td style="padding: 0.5rem;">{{ object.party_affiliation }}</td>
+    </tr>
+    <tr style="background-color: #f1f1f1;">
+      <th style="padding: 0.5rem; text-align: left;">Precinct Number</th>
+      <td style="padding: 0.5rem;">{{ object.precinct_number }}</td>
+    </tr>
+    <tr>
+      <th style="padding: 0.5rem; text-align: left;">Voting History</th>
+      <td style="padding: 0.5rem;">
+        <ul style="list-style-type: none; padding: 0;">
+          <li>v20state: {{ object.v20state }}</li>
+          <li>v21town: {{ object.v21town }}</li>
+          <li>v21primary: {{ object.v21primary }}</li>
+          <li>v22general: {{ object.v22general }}</li>
+          <li>v23town: {{ object.v23town }}</li>
+        </ul>
+      </td>
+    </tr>
+    <tr style="background-color: #f1f1f1;">
+      <th style="padding: 0.5rem; text-align: left;">Voter Score</th>
+      <td style="padding: 0.5rem;">{{ object.voter_score }}</td>
+    </tr>
+  </table>
+
+  <a href="{{ google_maps_url }}" target="_blank" style="display: block; margin-top: 1rem; text-decoration: none; color: blue;">View on Google Maps</a>
+{% endblock %}
