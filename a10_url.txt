@@ -1,1 +1,1 @@
-https://cs412-quotes-app.onrender.com/v0/
+https://cs412-quotes-app.onrender.com/voter_analytics/
