@@ -3,6 +3,7 @@ from django import forms
 from .models import Voter
 
 class VoterFilterForm(forms.Form):
+    # Form for filtering voters by party affiliation, date of birth range, voter score, and/or election participation.
     party_affiliation = forms.ChoiceField(
         choices=[('', 'All')] + list(Voter.objects.values_list('party_affiliation', 'party_affiliation').distinct()),
         required=False,

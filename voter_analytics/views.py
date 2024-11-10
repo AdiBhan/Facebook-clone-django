@@ -12,32 +12,40 @@ from .forms import VoterFilterForm
 
 from datetime import datetime
 
+
 class VoterListView(ListView):
+    # Displays list of voters with filtering options for user
     model = Voter
     template_name = 'voters/voter_list.html'
     context_object_name = 'voters'
-    paginate_by = 100
+    paginate_by = 100   # Show 100 results per page
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['filter_form'] = self.filter_form
         return context
-    
+
     def get_queryset(self):
+     # Returns a filtered queryset of voters based on filter form input
         queryset = super().get_queryset()
         self.filter_form = VoterFilterForm(self.request.GET)
 
+
+        # Applying filters if the form is valid
         if self.filter_form.is_valid():
             data = self.filter_form.cleaned_data
 
             filters = {}
-
+          # Adding filters based on form data
             if data['party_affiliation']:
-                filters['party_affiliation__in'] = data['party_affiliation'].split(',')
+                filters['party_affiliation__in'] = data['party_affiliation'].split(
+                    ',')
             if data['min_date_of_birth']:
-                filters['date_of_birth__gte'] = datetime(int(data['min_date_of_birth']), 1, 1)
+                filters['date_of_birth__gte'] = datetime(
+                    int(data['min_date_of_birth']), 1, 1)
             if data['max_date_of_birth']:
-                filters['date_of_birth__lte'] = datetime(int(data['max_date_of_birth']), 12, 31)
+                filters['date_of_birth__lte'] = datetime(
+                    int(data['max_date_of_birth']), 12, 31)
             if data['voter_score']:
                 filters['voter_score__in'] = data['voter_score'].split(',')
             filters['v20state'] = data['voted_in_v20state']
@@ -49,8 +57,10 @@ class VoterListView(ListView):
             queryset = queryset.filter(**filters)
 
         return queryset
-    
+
+
 class VoterGraphsView(ListView):
+    # Displays graphs related to voter data
     model = Voter
     template_name = 'voters/graphs.html'
     context_object_name = 'voters'
@@ -61,20 +71,26 @@ class VoterGraphsView(ListView):
         return context
 
     def get_queryset(self):
+        # Returns a filtered queryset of voters based on filter form input, similar to VoterListView
         queryset = super().get_queryset()
         self.filter_form = VoterFilterForm(self.request.GET)
 
+
+        # Applying filters if the form is valid
         if self.filter_form.is_valid():
             data = self.filter_form.cleaned_data
 
             filters = {}
-
+          # Adding filters based on form data
             if data['party_affiliation']:
-                filters['party_affiliation__in'] = data['party_affiliation'].split(',')
+                filters['party_affiliation__in'] = data['party_affiliation'].split(
+                    ',')
             if data['min_date_of_birth']:
-                filters['date_of_birth__gte'] = datetime(int(data['min_date_of_birth']), 1, 1)
+                filters['date_of_birth__gte'] = datetime(
+                    int(data['min_date_of_birth']), 1, 1)
             if data['max_date_of_birth']:
-                filters['date_of_birth__lte'] = datetime(int(data['max_date_of_birth']), 12, 31)
+                filters['date_of_birth__lte'] = datetime(
+                    int(data['max_date_of_birth']), 12, 31)
             if data['voter_score']:
                 filters['voter_score__in'] = data['voter_score'].split(',')
             filters['v20state'] = data['voted_in_v20state']
@@ -90,25 +106,30 @@ class VoterGraphsView(ListView):
     def get_graphs_context_data(self):
         queryset = self.get_queryset()
 
-        # Create the graphs
-        birth_years = list(queryset.values_list('date_of_birth__year', flat=True))
-        birth_year_hist = go.Figure(data=[go.Histogram(x=birth_years, nbinsx=50, xbins=dict(start=1900, end=2024, size=1))])
+        # Histogram for voter distribution by year of birth
+        birth_years = list(queryset.values_list(
+            'date_of_birth__year', flat=True))
+        birth_year_hist = go.Figure(data=[go.Histogram(
+            x=birth_years, nbinsx=50, xbins=dict(start=1900, end=2024, size=1))])
         birth_year_hist.update_layout(
             title='Voter Distribution by Year of Birth',
             xaxis_title='Year of Birth',
             yaxis_title='Number of Voters',
             bargap=0.1
         )
-        birth_year_hist_div = plotly.offline.plot(birth_year_hist, output_type='div')
-
-        party_affiliation_counts = queryset.values('party_affiliation').annotate(count=Count('party_affiliation'))
+        birth_year_hist_div = plotly.offline.plot(
+            birth_year_hist, output_type='div')
+        # Pie chart for voter distribution by party affiliation
+        party_affiliation_counts = queryset.values(
+            'party_affiliation').annotate(count=Count('party_affiliation'))
         party_affiliation_pie = go.Figure(data=[go.Pie(labels=[aff['party_affiliation'] for aff in party_affiliation_counts],
-                                                      values=[aff['count'] for aff in party_affiliation_counts])])
+                                                       values=[aff['count'] for aff in party_affiliation_counts])])
         party_affiliation_pie.update_layout(
             title='Voter Distribution by Party Affiliation',
             legend_title='Party Affiliation'
         )
-        party_affiliation_pie_div = plotly.offline.plot(party_affiliation_pie, output_type='div')
+        party_affiliation_pie_div = plotly.offline.plot(
+            party_affiliation_pie, output_type='div')
 
         election_participation = queryset.aggregate(
             v20state_count=Count('v20state'),
@@ -117,27 +138,32 @@ class VoterGraphsView(ListView):
             v22general_count=Count('v22general'),
             v23town_count=Count('v23town'),
         )
+        # Bar chart for voter participation by election
         election_participation_hist = go.Figure(data=[go.Bar(x=['v20state', 'v21town', 'v21primary', 'v22general', 'v23town'],
-                                                            y=[election_participation['v20state_count'],
-                                                               election_participation['v21town_count'],
-                                                               election_participation['v21primary_count'],
-                                                               election_participation['v22general_count'],
-                                                               election_participation['v23town_count']],
-                                                            text=[f'{value:,.0f}' for value in [election_participation['v20state_count'],
-                                                                                                election_participation['v21town_count'],
-                                                                                                election_participation['v21primary_count'],
-                                                                                                election_participation['v22general_count'],
-                                                                                                election_participation['v23town_count']]]
-                                                            )]
-                                                            )
+                                                             y=[election_participation['v20state_count'],
+                                                                election_participation['v21town_count'],
+                                                                election_participation['v21primary_count'],
+                                                                election_participation['v22general_count'],
+                                                                election_participation['v23town_count']],
+                                                             text=[f'{value:,.0f}' for value in [election_participation['v20state_count'],
+                                                                                                 election_participation[
+                                                                 'v21town_count'],
+                                                                 election_participation[
+                                                                 'v21primary_count'],
+                                                                 election_participation[
+                                                                 'v22general_count'],
+                                                                 election_participation['v23town_count']]]
+                                                             )]
+                                                )
         election_participation_hist.update_layout(
             title='Voter Participation by Election',
             xaxis_title='Election',
             yaxis_title='Number of Voters',
             bargap=0.1
         )
-        election_participation_hist_div = plotly.offline.plot(election_participation_hist, output_type='div')
-
+        election_participation_hist_div = plotly.offline.plot(
+            election_participation_hist, output_type='div')
+        # Returns graph divs to be used in template
         return {
             'birth_year_hist_div': birth_year_hist_div,
             'party_affiliation_pie_div': party_affiliation_pie_div,
@@ -145,11 +171,15 @@ class VoterGraphsView(ListView):
             'filter_form': self.filter_form,
         }
 
+
 class VoterDetailView(DetailView):
+    # Displays a single voter's information
     model = Voter
     template_name = 'voters/voter_detail.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['google_maps_url'] = f"https://www.google.com/maps/search/?api=1&query={self.object.street_number}+{self.object.street_name},+{self.object.zip_code}"
+        # Generate Google Maps URL based on voter's address
+        context['google_maps_url'] = f"https://www.google.com/maps/search/?api=1&query={
+            self.object.street_number}+{self.object.street_name},+{self.object.zip_code}"
         return context
