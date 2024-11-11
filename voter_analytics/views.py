@@ -16,7 +16,7 @@ from datetime import datetime
 class VoterListView(ListView):
     # Displays list of voters with filtering options for user
     model = Voter
-    template_name = 'voters/voter_list.html'
+    template_name = 'voter_analytics/voter_list.html'
     context_object_name = 'voters'
     paginate_by = 100   # Show 100 results per page
 
@@ -62,7 +62,7 @@ class VoterListView(ListView):
 class VoterGraphsView(ListView):
     # Displays graphs related to voter data
     model = Voter
-    template_name = 'voters/graphs.html'
+    template_name = 'voter_analytics/graphs.html'
     context_object_name = 'voters'
 
     def get_context_data(self, **kwargs):
@@ -175,7 +175,7 @@ class VoterGraphsView(ListView):
 class VoterDetailView(DetailView):
     # Displays a single voter's information
     model = Voter
-    template_name = 'voters/voter_detail.html'
+    template_name = 'voter_analytics/voter_detail.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
