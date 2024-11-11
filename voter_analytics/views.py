@@ -19,6 +19,8 @@ class VoterListView(ListView):
     template_name = 'voter_analytics/voter_list.html'
     context_object_name = 'voters'
     paginate_by = 100   # Show 100 results per page
+    ordering = ['-date_of_birth']  # Order by date of birth in descending order
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -180,6 +182,8 @@ class VoterDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # Generate Google Maps URL based on voter's address
-        context['google_maps_url'] = f"https://www.google.com/maps/search/?api=1&query={
-            self.object.street_number}+{self.object.street_name},+{self.object.zip_code}"
+        context['google_maps_url'] = (
+            f"https://www.google.com/maps/search/?api=1&query="
+            f"{self.object.street_number}+{self.object.street_name},+{self.object.zip_code}"
+        )
         return context
