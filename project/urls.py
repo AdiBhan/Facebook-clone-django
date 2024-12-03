@@ -12,82 +12,104 @@ from . import views
 
 urlpatterns =  [
     
+    
+    # Home page
+    path("", views.HomePage.as_view(), name="home"),
+    
+    
+     # Authentication 
+    #_______________________________________________________________
     # Route for Login to PetMate with username and password
     path("login/", auth_views.LoginView.as_view(), name="login"),
     # Route for Logout of PetMate application
     path("logout/", auth_views.LogoutView.as_view(), name="logout"),
+     #_______________________________________________________________
     
+    
+    # Shelter
+     #_______________________________________________________________
     # Route to view all Shelters
     path("shelters/", views.ShowSheltersPage.as_view(), name="shelters"),
-    
-    
     # Route to view a specific Shelter by ID
     path("shelters/<int:shelter_id>/", views.ShowShelterPage.as_view(), name="shelter"),
-    
     # Route to create a new Shelter
     path("shelters/create/", views.CreateSheltersPage.as_view(), name="create_shelter"),
-    
     # Route to update a specific Shelter by ID
     path("shelters/<int:shelter_id>/update/", views.UpdateShelterPage.as_view(), name="update_shelter"),
+     #_______________________________________________________________
     
     
+    # Pets Routes
+     #_______________________________________________________________
     # Route to view all Pets
     path("pets/", views.ShowPetsPage.as_view(), name="pets"),
-    
     # Route to view a specific Pet by ID
     path("pets/<int:pet_id>/", views.ShowPetPage.as_view(), name="pet"),
-    
     # Route to create a new Pet
     path("pets/create/", views.CreatePetsPage.as_view(), name="create_pet"),
-    
     # Route to update a specific Pet by ID
     path("pets/<int:pet_id>/update/", views.UpdatePetPage.as_view(), name="update_pet"),
-    
     # Route to delete a specific Pet
     path("pets/<int:pet_id>/delete/", views.DeletePetPage.as_view(), name="delete_pet"),
+     #_______________________________________________________________
     
     
+    # Adoption Routes
+     #_______________________________________________________________
     # Route for Shelters to View all adoptions
-    
     path("adoptions/", views.ViewAdoptionPage.as_view(), name="view_adoptions"),
-    
     # Route for pet owners to adopt a Pet
-    
     path("adoptions/<int:pet_id>/", views.CreateAdoptionPage.as_view(), name="view_adoption"),
-    
     # Route for shelters to update status on adoption
-    
     path("adoptions/<int:adoption_id>/update/", views.UpdateAdoptionView.as_view(), name="update_adoption"),
-    
     # Route for shelters to delete adoption
-    
     path("adoptions/<int:adoption_id>/delete/", views.DeleteAdoptionPage.as_view(), name="delete_adoption"),
+     #_______________________________________________________________
     
     
-    
+    # Adoption View Routes
+     #_______________________________________________________________
     # Route for pet owners to view their adoptions
-    
     path("my_adoptions/", views.ViewMyAdoptionsPage.as_view(), name="view_my_adoptions"),
-    
     # Route for pet owners to view their adoptions
-    
     path("my_adoptions/<int:adoption_id>/", views.ViewMyAdoptionPage.as_view(), name="view_my_adoption"),
+     #_______________________________________________________________
     
-
+    
+    # Comment Routes
+     #_______________________________________________________________
     # Route for Users to comment on Pet profile 
-
     path("comments/create/<int:pet_id>/", views.CreateCommentView.as_view(), name="create_comment"),
-    
      # Route for Users to delete comments on Pet profile 
-    
     path("comments/delete/<int:comment_id>/", views.DeleteCommentView.as_view(), name="delete_comment"),
+     #_______________________________________________________________
     
     
+    # Filtering Routes
+     #_______________________________________________________________
     # Route used for filtering pet profiles based on pet name or age/breed
     path("pets/search/", views.FilterPetPage.as_view(), name="pet_search"),
-    
-    
     # Route used for filtering shelter profiles based of Shelter name
     path("shelters/search/", views.FilterShelterPage.as_view(), name="shelter_search"),
+     #_______________________________________________________________
+     
+     
+         # Shelter Review Routes
+    #_______________________________________________________________
+    # Route to create a review for a shelter
+    path("shelters/<int:shelter_id>/reviews/create/", 
+         views.CreateShelterReviewView.as_view(), 
+         name="create_shelter_review"),
+    
+    # Route to update a review
+    path("reviews/<int:pk>/update/", 
+         views.UpdateShelterReviewView.as_view(), 
+         name="update_shelter_review"),
+    
+    # Route to delete a review
+    path("reviews/<int:pk>/delete/", 
+         views.DeleteShelterReviewView.as_view(), 
+         name="delete_shelter_review"),
+    #_______________________________________________________________
     
 ]
