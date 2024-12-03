@@ -1,0 +1,75 @@
+{% extends 'project/base.html' %}
+
+{% block title %}Available Pets{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Available Pets</h1>
+    <div class="search-bar">
+        <form method="GET" action="{% url 'pet_search' %}">
+            <div class="search-inputs">
+                <input type="text" name="q" placeholder="Search pets..." value="{{ request.GET.q }}">
+                <select name="pet_type">
+                    <option value="">All Types</option>
+                    <option value="DOG">Dogs</option>
+                    <option value="CAT">Cats</option>
+                    <option value="OTHER">Other</option>
+                </select>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="pet-grid">
+    {% for pet in pets %}
+        <div class="pet-card">
+            <div class="pet-image">
+                <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
+            </div>
+            <div class="pet-info">
+                <h3>{{ pet.name }}</h3>
+                <div class="pet-details">
+                    <p><i class="fas fa-paw"></i> {{ pet.get_pet_type_display }}</p>
+                    <p><i class="fas fa-birthday-cake"></i> {{ pet.age }} years old</p>
+                    <p><i class="fas fa-dog"></i> {{ pet.breed }}</p>
+                </div>
+                <p class="shelter-name">
+                    <i class="fas fa-home"></i> {{ pet.shelter.name }}
+                </p>
+                <div class="pet-actions">
+                    <a href="{% url 'pet' pet.id %}" class="btn btn-primary">View Details</a>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'view_adoption' pet.id %}" class="btn btn-secondary">Adopt Me</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="no-results">
+            <i class="fas fa-search"></i>
+            <p>No pets found matching your criteria.</p>
+        </div>
+    {% endfor %}
+</div>
+
+{% if is_paginated %}
+<div class="pagination">
+    {% if page_obj.has_previous %}
+        <a href="?page=1" class="btn btn-small">&laquo; First</a>
+        <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-small">Previous</a>
+    {% endif %}
+
+    <span class="current-page">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+
+    {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="btn btn-small">Next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-small">Last &raquo;</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

@@ -14,7 +14,7 @@ urlpatterns =  [
     
     
     # Home page
-    path("", views.HomePage.as_view(), name="home"),
+    path("", views.HomePage.as_view(), name="index"),
     
     
      # Authentication 

@@ -1,0 +1,60 @@
+
+ <!--  ./templates/project/index.html  -->
+
+
+ {% extends 'project/base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1>Find Your Perfect Pet Companion</h1>
+        <p>Connect with local shelters and find your new best friend</p>
+        <div class="hero-buttons">
+            <a href="{% url 'pets' %}" class="btn btn-primary">Browse Pets</a>
+            <a href="{% url 'shelters' %}" class="btn btn-secondary">View Shelters</a>
+        </div>
+    </div>
+</section>
+
+<section class="featured">
+    <h2>Recent Additions</h2>
+    <div class="pet-grid">
+        {% for pet in recent_pets %}
+            <div class="pet-card">
+                <div class="pet-image">
+                    <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
+                </div>
+                <div class="pet-info">
+                    <h3>{{ pet.name }}</h3>
+                    <p>{{ pet.breed }} • {{ pet.age }} years old</p>
+                    <a href="{% url 'pet' pet.id %}" class="btn btn-small">View Details</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="featured">
+    <h2>Top Rated Shelters</h2>
+    <div class="shelter-grid">
+        {% for shelter in top_shelters %}
+            <div class="shelter-card">
+                <h3>{{ shelter.name }}</h3>
+                <div class="shelter-rating">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= shelter.average_rating %}
+                            <i class="fas fa-star"></i>
+                        {% else %}
+                            <i class="far fa-star"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <p>{{ shelter.location }}</p>
+                <a href="{% url 'shelter' shelter.id %}" class="btn btn-small">View Shelter</a>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

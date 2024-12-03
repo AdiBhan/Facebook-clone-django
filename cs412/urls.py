@@ -30,4 +30,4 @@ urlpatterns = [
     path("marathon_analytics/", include('marathon_analytics.urls')),
     path("voter_analytics/", include('voter_analytics.urls')),
     path("project/", include('project.urls'))
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
