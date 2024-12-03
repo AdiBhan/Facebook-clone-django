@@ -21,10 +21,12 @@
                 
                     {% else %}
                     <li><a href="{% url 'login' %}">Log in</a></li>
-                    {% if article %}
+                   
+                    {% if  article %}
                     <li><a href="{% url 'create_article' pk=article.pk %}">Create Comment</a></li>
-
                     {% endif %}
+                   
+
                     {% endif %}
                 </ul>
                 <form method="POST" action = "{% url 'logout' %}">

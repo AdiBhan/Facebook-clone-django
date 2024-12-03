@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     "blog",
     "mini_fb",
     'marathon_analytics',
-    "voter_analytics"
+    "voter_analytics",
+    "project"
 ]
 
 MIDDLEWARE = [
@@ -141,5 +142,5 @@ import os
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-LOGIN_REDIRECT_URL = 'show_all_profiles'
-LOGOUT_REDIRECT_URL = 'show_all_profiles'
+LOGIN_REDIRECT_URL = '/blog/'
+LOGOUT_REDIRECT_URL = '/blog/'

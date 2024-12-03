@@ -20,7 +20,7 @@ class ShowProfilePageView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        profile = self.object 
+        profile = self.object
         context['status_messages'] = profile.get_status_messages()
         return context
 
@@ -42,12 +42,14 @@ class CreateProfileView(CreateView):
         if user_form.is_valid():
             # Create the user
             user = user_form.save()
+           
             
             # Attach user to profile
-            form.instance.user = user
+            # form.instance.user = user
+            Profile.objects.create(user=user)
             
             # Save the profile
-            response = super().form_valid(form)
+            # response = super().form_valid(form)
             
             # Log the user in
             login(self.request, user)
