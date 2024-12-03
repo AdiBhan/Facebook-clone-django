@@ -81,6 +81,7 @@ class VoterGraphsView(ListView):
         # Applying filters if the form is valid
         if self.filter_form.is_valid():
             data = self.filter_form.cleaned_data
+            # print("DATA", data)
 
             filters = {}
           # Adding filters based on form data
@@ -107,10 +108,10 @@ class VoterGraphsView(ListView):
 
     def get_graphs_context_data(self):
         queryset = self.get_queryset()
-
         # Histogram for voter distribution by year of birth
         birth_years = list(queryset.values_list(
             'date_of_birth__year', flat=True))
+        print(birth_years)
         birth_year_hist = go.Figure(data=[go.Histogram(
             x=birth_years, nbinsx=50, xbins=dict(start=1900, end=2024, size=1))])
         birth_year_hist.update_layout(
@@ -119,6 +120,7 @@ class VoterGraphsView(ListView):
             yaxis_title='Number of Voters',
             bargap=0.1
         )
+        
         birth_year_hist_div = plotly.offline.plot(
             birth_year_hist, output_type='div')
         # Pie chart for voter distribution by party affiliation

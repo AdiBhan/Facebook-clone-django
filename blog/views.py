@@ -1,5 +1,6 @@
 # blogs/views.py
 # views to show the blog application
+from django.http import Http404
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from .models import Article 
@@ -40,18 +41,21 @@ class ArticleView(DetailView):
     # Error: Generic detail view RandomArticleView must be called with either an object pk or a slug in the URLconf.
     # Solution: Must implement method get_object
     
-    def get_object(self): 
-        ''' returns random record/ object of Articles'''
-        
+    def get_object(self):
+        ''' Returns a random record/object of Articles or raises 404 if none exist '''
         all_articles = Article.objects.all()
-        return random.choice(all_articles) 
-    
+        print(all_articles)
+        if not all_articles:
+            # Raise a 404 error if no articles are available
+            raise Http404("No articles available")
+        return random.choice(all_articles)
     
         
 class CreateCommentView(LoginRequiredMixin, CreateView):
     '''A view to create a new comment and save it to the database.'''
     form_class = CreateCommentForm
     template_name = "blog/create_comment_form.html"
+    login_url = "/blog/login"
     def form_valid(self, form):
         '''
         Handle the form submission. We need to set the foreign key by 
@@ -71,10 +75,7 @@ class CreateCommentView(LoginRequiredMixin, CreateView):
         
         return super().form_valid(form)
     
-    def get_login_url(self) -> str:
-        ''' return the URL required for login'''
-        
-        return reverse('login')
+
 ## also:  revise the get_success_url
     def get_success_url(self) -> str:
         '''Return the URL to redirect to after successfully submitting form.'''
@@ -90,6 +91,7 @@ class CreateArticleView(LoginRequiredMixin, CreateView):
     '''A view to create a new Article and save it to the database.'''
     form_class = CreateArticleForm  # Assign the CreateArticleForm to form_class
     template_name = "blog/create_article_form.html"
+    login_url = "/blog/login"
     
     def form_valid(self, form):
         '''
@@ -113,50 +115,32 @@ class CreateArticleView(LoginRequiredMixin, CreateView):
 # The commented out `RegistrationView` class in the `views.py` file is a view that is intended to
 # handle the form submission for account registration. It is using a `CreateView` which is a generic
 # view provided by Django to handle the creation of objects.
+
 class RegistrationView(CreateView):
     '''
-    show/process form for account registration
+    Show/process form for account registration
     '''
     template_name = 'blog/register.html'
     form_class = UserCreationForm
-    success_url = '/blog/'  # Redirect to the desired page upon successful registration
-    def dispatch(self, *args, **kwargs):
-        '''
-        Handle the User creation part of the form submission, 
-        '''
-        # handle the POST:
-        if self.request.POST:
-            # reconstruct the UserCreationForm from the POST data
-            user_form = UserCreationForm(self.request.POST)
-            # create the user and login
-            user = user_form.save()     
-            print(f"RegistrationView.form_valid(): Created user= {user}")   
-            login(self.request, user)
-            print(f"RegistrationView.form_valid(): User is logged in")   
-            
-            # for mini_fb: attach the user to the Profile instance object so that it 
-            # can be saved to the database in super().form_valid()
-            return redirect(reverse('show_all'))
-        
-        # GET: handled by super class
-        return super().dispatch(*args, **kwargs)
+    success_url = '/blog/'
 
+    def dispatch(self, request, *args, **kwargs):
+        # Common logic for all requests
+        print("Dispatch called")
+        print(f"Request method: {request.method}")
+        return super().dispatch(request, *args, **kwargs)
 
+    def get(self, request, *args, **kwargs):
+        # Specific logic for GET requests
+        print("GET called: Initial page load")
+        self.object = None  # Required for CreateView to render a blank form
+        context = self.get_context_data()
+        context['example_variable'] = "Welcome to Registration!"
+        return self.render_to_response(context)
 
     def form_valid(self, form):
-        """
-        If form is valid, save the new user, log them in, and redirect.
-        """
-        user = form.save(commit=False)  # Create the user object
-        # Check if form is valid
-        if form.is_valid():
-            user.save()  # Save user to the database
-            login(self.request, user)  # Log in the user
-            return redirect(self.success_url)
-        else:
-            # If the form is invalid, render the form with error messages
-            return render(self.request, self.template_name, {'form': form})
-
-    def form_invalid(self, form):
-        """If the form is invalid, re-render the page with the form and error messages."""
-        return self.render_to_response(self.get_context_data(form=form))
+        # Specific logic for successful POST requests
+        user = form.save()
+        login(self.request, user)
+        print(f"User created: {user}")
+        return redirect(self.success_url)

@@ -18,11 +18,12 @@ class ResultsListView(ListView):
         
         # start with entire queryset
         qs = super().get_queryset().order_by('place_overall')
+        # print("QS", qs.filter(first_name__istartswith="Kevin"))
         # filter results by these field(s):
         if 'first_name' in self.request.GET:
             first_name = self.request.GET['first_name']
             if first_name:
-                qs = qs.filter(first_name=first_name)
+                qs = qs.filter(first_name__istartswith=first_name)
                 
         return qs
 class ResultDetailView(DetailView):
@@ -59,7 +60,7 @@ class ResultDetailView(DetailView):
         # create graph of runners who passed/passed by
         x= [f'Runners Passed by {r.first_name}', f'Runners who Passed {r.first_name}']
         y = [r.get_runners_passed(), r.get_runners_passed_by()]
-        
+        4
         fig = go.Bar(x=x, y=y)
         title_text = f"Runners Passed/Passed By"
         graph_div_passed = plotly.offline.plot({"data": [fig], 
