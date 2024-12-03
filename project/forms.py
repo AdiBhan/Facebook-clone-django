@@ -103,7 +103,7 @@ class UserRegistrationForm(UserCreationForm):
     def clean_email(self):
         '''clean_email() method validates that the email isn't already registered in the system'''
         
-        email = self.cleaned_data.get('email')
-        if User.objects.filter(email=email).exists():
+        email = self.cleaned_data.get('email') # get email address of user
+        if User.objects.filter(email=email).exists(): # If email is already associated with a user, raise error
             raise forms.ValidationError("This email is already registered.")
-        return email
+        return email # else return email

@@ -3,199 +3,272 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.core.exceptions import PermissionDenied
-from django.db.models import Avg, Q
+from django.db.models import Avg, Q, Count
 from .models import Shelter, Pet, AdoptionRequest, Comment, ShelterReview
 from .forms import AdoptionRequestForm, CommentForm, ShelterReviewForm, UserRegistrationForm
 from django.utils import timezone
 from django.contrib.auth import login
 class RegisterView(CreateView):
-    template_name = 'registration/register.html'
-    form_class = UserRegistrationForm
-    success_url = '/'
+    ''' RegisterView class uses CreateView to render register page and handle user submission redirecting them to the default homepage afterwards
+    and checking logging with form_valid() helper method'''
+    
+    template_name = 'registration/register.html' # template page which will be rendered
+    form_class = UserRegistrationForm # Uses UserRegistrationForm form to render form in forms.py file
+    success_url = '/' # If registration is successful (user filled out all input fields and no duplicate emails), will redirect to "/"
 
     def form_valid(self, form):
-        user = form.save()
-        login(self.request, user)
-        return redirect('index')
+        ''' form_valid() method saves form and logs user in. Afterward redirects them to index homepage'''
+        user = form.save() # saves form
+        login(self.request, user)  # logs user in
+        return redirect('index') # redirects user to /index page if registration is successful (form is valid)
 
 class HomePage(TemplateView):
-    template_name = 'project/index.html'
+    '''HomePage class uses TemplateView to render the index page with recent pets and top-rated shelters'''
+    template_name = 'project/index.html'  # template page which will be rendered
     
     def get_context_data(self, **kwargs):
+        '''get_context_data method adds recent pets and top shelters to the template context'''
         context = super().get_context_data(**kwargs)
-        context['recent_pets'] = Pet.objects.all().order_by('-id')[:6]
-        context['top_shelters'] = Shelter.objects.all().order_by('-average_rating')[:3]
+        context['recent_pets'] = Pet.objects.all().order_by('-id')[:6]  # gets 6 most recent pets
+        context['top_shelters'] = Shelter.objects.all().order_by('-average_rating')[:3]  # gets top 3 rated shelters
         return context
 
-# Shelter Views
 class ShowSheltersPage(ListView):
-    model = Shelter
-    template_name = 'project/shelter_list.html'
-    context_object_name = 'shelters'
-    paginate_by = 10
+    '''ShowSheltersPage class uses ListView to display all shelters with pagination'''
+    model = Shelter  # uses Shelter model
+    template_name = 'project/shelter_list.html'  # template page which will be rendered
+    context_object_name = 'shelters'  # name used to access shelters in template
+    paginate_by = 10  # number of shelters per page
 
 class ShowShelterPage(DetailView):
-    model = Shelter
-    template_name = 'project/shelter_details.html'
-    context_object_name = 'shelter'
+    '''ShowShelterPage class uses DetailView to display detailed information about a specific shelter'''
+    model = Shelter  # uses Shelter model
+    template_name = 'project/shelter_details.html'  # template page which will be rendered
+    context_object_name = 'shelter'  # name used to access shelter in template
     
     def get_context_data(self, **kwargs):
+        '''get_context_data method adds shelter's pets and reviews to the template context'''
         context = super().get_context_data(**kwargs)
-        context['pets'] = Pet.objects.filter(shelter=self.object)
-        context['reviews'] = ShelterReview.objects.filter(shelter=self.object)
+        context['pets'] = Pet.objects.filter(shelter=self.object)  # gets all pets for this shelter
+        context['reviews'] = ShelterReview.objects.filter(shelter=self.object)  # gets all reviews for this shelter
         return context
-    
-# Pet Views
+
 class ShowPetsPage(ListView):
-    model = Pet
-    template_name = 'project/pets_list.html'
-    context_object_name = 'pets'
-    paginate_by = 12
+    '''ShowPetsPage class uses ListView to display all pets with pagination'''
+    model = Pet  # uses Pet model
+    template_name = 'project/pets_list.html'  # template page which will be rendered
+    context_object_name = 'pets'  # name used to access pets in template
+    paginate_by = 12  # number of pets per page
 
 class ShowPetPage(DetailView):
-    model = Pet
-    template_name = 'project/pets_detail.html'
-    context_object_name = 'pet'
+    '''ShowPetPage class uses DetailView to display detailed information about a specific pet'''
+    model = Pet  # uses Pet model
+    template_name = 'project/pets_detail.html'  # template page which will be rendered
+    context_object_name = 'pet'  # name used to access pet in template
     
     def get_context_data(self, **kwargs):
+        '''get_context_data method adds pet's comments and adoption form to the template context'''
         context = super().get_context_data(**kwargs)
-        context['comments'] = Comment.objects.filter(pet=self.object)
-        context['adoption_form'] = AdoptionRequestForm()
+        context['comments'] = Comment.objects.filter(pet=self.object)  # gets all comments for this pet
+        context['adoption_form'] = AdoptionRequestForm()  # creates new adoption request form
         return context
 
-
-# Adoption Views
-
 class ViewMyAdoptionsPage(LoginRequiredMixin, ListView):
-    model = AdoptionRequest
-    template_name = 'project/my_adoptions.html'
-    context_object_name = 'adoptions'
+    '''ViewMyAdoptionsPage class uses ListView to display all adoption requests for the logged-in user
+    LoginRequiredMixin ensures only authenticated users can access this view'''
+    model = AdoptionRequest  # uses AdoptionRequest model
+    template_name = 'project/my_adoptions.html'  # template page which will be rendered
+    context_object_name = 'adoptions'  # name used to access adoptions in template
     
     def get_queryset(self):
+        '''get_queryset method filters adoption requests to show only those belonging to the current user'''
+        return AdoptionRequest.objects.filter(user=self.request.user)
+
+# Adoption Views
+class ViewMyAdoptionsPage(LoginRequiredMixin, ListView):
+    '''ViewMyAdoptionsPage class uses ListView to display all adoption requests for the logged-in user.
+    LoginRequiredMixin ensures only authenticated users can access this view'''
+    model = AdoptionRequest  # uses AdoptionRequest model
+    template_name = 'project/my_adoptions.html'  # template page which will be rendered
+    context_object_name = 'adoptions'  # name used to access adoptions in template
+    
+    def get_queryset(self):
+        '''get_queryset method filters adoption requests to show only those belonging to the current user'''
         return AdoptionRequest.objects.filter(user=self.request.user)
 
 class ViewMyAdoptionPage(LoginRequiredMixin, DetailView):
-    model = AdoptionRequest
-    template_name = 'project/adoption_detail.html'
-    context_object_name = 'adoption'
-    pk_url_kwarg = 'adoption_id'
+    '''ViewMyAdoptionPage class uses DetailView to show detailed information about a specific adoption request.
+    LoginRequiredMixin ensures only authenticated users can access this view'''
+    model = AdoptionRequest  # uses AdoptionRequest model
+    template_name = 'project/adoption_detail.html'  # template page which will be rendered
+    context_object_name = 'adoption'  # name used to access adoption in template
+    pk_url_kwarg = 'adoption_id'  # URL parameter name for the adoption ID
     
     def get_queryset(self):
+        '''get_queryset method ensures users can only view their own adoption requests'''
         return AdoptionRequest.objects.filter(user=self.request.user)
 
 class ViewAdoptionPage(LoginRequiredMixin, ListView):
-    model = AdoptionRequest
-    template_name = 'project/adoption_list.html'
-    context_object_name = 'adoptions'
+    '''ViewAdoptionPage class uses ListView to show adoption requests for shelter employees.
+    LoginRequiredMixin ensures only authenticated users can access this view'''
+    model = AdoptionRequest  # uses AdoptionRequest model
+    template_name = 'project/adoption_list.html'  # template page which will be rendered
+    context_object_name = 'adoptions'  # name used to access adoptions in template
     
     def get_queryset(self):
-            # Shelter employees see adoptions for their shelter
-            return AdoptionRequest.objects.filter(shelter=self.request.user)
+        '''get_queryset method filters adoption requests to show only those for the employee's shelter'''
+        return AdoptionRequest.objects.filter(shelter=self.request.user)
 
 class CreateAdoptionPage(LoginRequiredMixin, CreateView):
-    model = AdoptionRequest
-    form_class = AdoptionRequestForm
-    template_name = 'project/adoption_create.html'
+    '''CreateAdoptionPage class uses CreateView to handle new adoption request submissions.
+    LoginRequiredMixin ensures only authenticated users can create adoption requests'''
+    model = AdoptionRequest  # uses AdoptionRequest model
+    form_class = AdoptionRequestForm  # form class to handle adoption request creation
+    template_name = 'project/adoption_create.html'  # template page which will be rendered
     
     def get_context_data(self, **kwargs):
+        '''get_context_data method adds the pet being adopted to the template context'''
         context = super().get_context_data(**kwargs)
-        context['pet'] = get_object_or_404(Pet, pk=self.kwargs['pet_id'])
+        context['pet'] = get_object_or_404(Pet, pk=self.kwargs['pet_id'])  # gets pet by ID or returns 404
         return context
     
     def form_valid(self, form):
-        form.instance.user = self.request.user
-        form.instance.pet = get_object_or_404(Pet, pk=self.kwargs['pet_id'])
-        form.instance.shelter = form.instance.pet.shelter
-        form.instance.status = 'PENDING'
-        form.instance.date_requested = timezone.now()
+        '''form_valid method populates additional fields before saving the adoption request'''
+        form.instance.user = self.request.user  # sets the requesting user
+        form.instance.pet = get_object_or_404(Pet, pk=self.kwargs['pet_id'])  # sets the pet being requested
+        form.instance.shelter = form.instance.pet.shelter  # sets the shelter from the pet
+        form.instance.status = 'PENDING'  # sets initial status
+        form.instance.date_requested = timezone.now()  # sets request timestamp
         return super().form_valid(form)
     
     def get_success_url(self):
+        '''get_success_url method redirects to user's adoption list after successful submission'''
         return reverse_lazy('view_my_adoptions')
 
-
-
 class DeleteAdoptionRequestView(LoginRequiredMixin, DeleteView):
-    model = AdoptionRequest
-    template_name = 'project/adoption_delete.html'
-    pk_url_kwarg = 'adoption_id'
-    success_url = reverse_lazy('view_my_adoptions')
+    '''DeleteAdoptionRequestView class uses DeleteView to handle deletion of pending adoption requests.
+    LoginRequiredMixin ensures only authenticated users can delete requests'''
+    model = AdoptionRequest  # uses AdoptionRequest model
+    template_name = 'project/adoption_delete.html'  # template page which will be rendered
+    pk_url_kwarg = 'adoption_id'  # URL parameter name for the adoption ID
+    success_url = reverse_lazy('view_my_adoptions')  # redirect URL after successful deletion
 
     def dispatch(self, request, *args, **kwargs):
+        '''dispatch method ensures only the request creator can delete pending requests'''
         adoption = self.get_object()
         if not (adoption.user == request.user and adoption.status == 'PENDING'):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
-
 # Comment Views
 class CreateCommentView(LoginRequiredMixin, CreateView):
-    model = Comment
-    form_class = CommentForm
-    template_name = 'project/comment_create.html'
+    '''CreateCommentView class uses CreateView to handle new comment submissions on pets.
+    LoginRequiredMixin ensures only authenticated users can create comments'''
+    model = Comment  # uses Comment model
+    form_class = CommentForm  # form class to handle comment creation
+    template_name = 'project/comment_create.html'  # template page which will be rendered
     
     def get_context_data(self, **kwargs):
+        '''get_context_data method adds the pet being commented on to the template context'''
         context = super().get_context_data(**kwargs)
-        context['pet'] = get_object_or_404(Pet, pk=self.kwargs['pet_id'])
+        context['pet'] = get_object_or_404(Pet, pk=self.kwargs['pet_id'])  # gets pet by ID or returns 404
         return context
     
     def form_valid(self, form):
-        # Using the authenticated user directly
-        form.instance.user = self.request.user
-        form.instance.pet = get_object_or_404(Pet, pk=self.kwargs['pet_id'])
-        form.instance.date_posted = timezone.now()
+        '''form_valid method sets the comment author and pet before saving'''
+        form.instance.user = self.request.user  # sets the commenting user
+        form.instance.pet = get_object_or_404(Pet, pk=self.kwargs['pet_id'])  # sets the pet being commented on
+        form.instance.date_posted = timezone.now()  # sets comment timestamp
         return super().form_valid(form)
     
     def get_success_url(self):
+        '''get_success_url method redirects to pet detail page after successful comment'''
         return reverse_lazy('pet', kwargs={'pk': self.kwargs['pet_id']})
 
+# Comment Views
+class CreateCommentView(LoginRequiredMixin, CreateView):
+    '''CreateCommentView class uses CreateView to handle new comment submissions on pets.
+    LoginRequiredMixin ensures only authenticated users can create comments'''
+    model = Comment  # uses Comment model
+    form_class = CommentForm  # form class to handle comment creation
+    template_name = 'project/comment_create.html'  # template page which will be rendered
+    
+    def get_context_data(self, **kwargs):
+        '''get_context_data method adds the pet being commented on to the template context'''
+        context = super().get_context_data(**kwargs)
+        context['pet'] = get_object_or_404(Pet, pk=self.kwargs['pet_id'])  # gets pet by ID or returns 404
+        return context
+    
+    def form_valid(self, form):
+        '''form_valid method sets the comment author and pet before saving'''
+        form.instance.user = self.request.user  # sets the commenting user
+        form.instance.pet = get_object_or_404(Pet, pk=self.kwargs['pet_id'])  # sets the pet being commented on
+        form.instance.date_posted = timezone.now()  # sets comment timestamp
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        '''get_success_url method redirects to pet detail page after successful comment'''
+        return reverse_lazy('pet', kwargs={'pk': self.kwargs['pet_id']})
 class DeleteCommentView(LoginRequiredMixin, DeleteView):
-    model = Comment
-    template_name = 'project/comment_delete.html'
+    '''DeleteCommentView class uses DeleteView to handle deletion of comments.
+    LoginRequiredMixin ensures only authenticated users can delete comments'''
+    model = Comment  # uses Comment model
+    template_name = 'project/comment_delete.html'  # template page which will be rendered
     
     def dispatch(self, request, *args, **kwargs):
+        '''dispatch method ensures only the comment author can delete the comment'''
         comment = self.get_object()
         if request.user != comment.user:
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
     
     def get_success_url(self):
+        '''get_success_url method redirects to pet detail page after successful deletion'''
         return reverse_lazy('pet', kwargs={'pk': self.object.pet.pk})
+
 class UpdateCommentView(LoginRequiredMixin, UpdateView):
-    model = Comment
-    form_class = CommentForm
-    template_name = 'project/comment_edit.html'
+    '''UpdateCommentView class uses UpdateView to handle editing of existing comments.
+    LoginRequiredMixin ensures only authenticated users can edit comments'''
+    model = Comment  # uses Comment model
+    form_class = CommentForm  # form class to handle comment editing
+    template_name = 'project/comment_edit.html'  # template page which will be rendered
     
     def dispatch(self, request, *args, **kwargs):
+        '''dispatch method ensures only the comment author can edit the comment'''
         comment = self.get_object()
         if request.user != comment.user:
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
+        '''get_context_data method adds the pet being commented on to the template context'''
         context = super().get_context_data(**kwargs)
-        context['pet'] = self.object.pet
+        context['pet'] = self.object.pet  # adds pet to context
         return context
     
     def get_success_url(self):
+        '''get_success_url method redirects to pet detail page after successful edit'''
         return reverse_lazy('pet', kwargs={'pk': self.object.pet.id})
     
 # Search Views
 class FilterPetPage(ListView):
-    model = Pet
-    template_name = 'project/pets_list.html' 
-    context_object_name = 'pets'
-    paginate_by = 12
+    '''FilterPetPage class uses ListView to display filtered pet results based on search criteria'''
+    model = Pet  # uses Pet model
+    template_name = 'project/pets_list.html'  # template page which will be rendered
+    context_object_name = 'pets'  # name used to access pets in template
+    paginate_by = 12  # number of pets per page
     
     def get_queryset(self):
-        query = self.request.GET.get('q', '')
-        pet_type = self.request.GET.get('pet_type', '')
-        shelter = self.request.GET.get('shelter', '')
-        min_age = self.request.GET.get('min_age')
-        max_age = self.request.GET.get('max_age')
-
-        queryset = Pet.objects.all()
-
+        '''get_queryset method filters pets based on search parameters: name, type, shelter, and age range'''
+        query = self.request.GET.get('q', '')  # gets search query parameter
+        pet_type = self.request.GET.get('pet_type', '')  # gets pet type filter
+        shelter = self.request.GET.get('shelter', '')  # gets shelter filter
+        min_age = self.request.GET.get('min_age')  # gets minimum age filter
+        max_age = self.request.GET.get('max_age')  # gets maximum age filter
+        
+        queryset = Pet.objects.all()  # starts with all pets
+        
+        # Applies text search filter
         if query:
             queryset = queryset.filter(
                 Q(name__icontains=query) |
@@ -203,24 +276,23 @@ class FilterPetPage(ListView):
                 Q(description__icontains=query)
             )
         
+        # Applies additional filters if specified
         if pet_type:
             queryset = queryset.filter(pet_type=pet_type)
-            
         if shelter:
             queryset = queryset.filter(shelter=shelter)
-            
         if min_age:
             queryset = queryset.filter(age__gte=min_age)
-
         if max_age:
             queryset = queryset.filter(age__lte=max_age)
 
         return queryset
 
     def get_context_data(self, **kwargs):
+        '''get_context_data method preserves search parameters in context for pagination and form pre-filling'''
         context = super().get_context_data(**kwargs)
-        context['shelters'] = Shelter.objects.all()  # For shelter dropdown
-        # Preserve search parameters in pagination
+        context['shelters'] = Shelter.objects.all()  # adds all shelters for dropdown
+        # Preserves search parameters
         context['current_type'] = self.request.GET.get('pet_type', '')
         context['current_shelter'] = self.request.GET.get('shelter', '')
         context['current_min_age'] = self.request.GET.get('min_age', '')
@@ -229,117 +301,175 @@ class FilterPetPage(ListView):
         return context
 
 class FilterShelterPage(ListView):
-    model = Shelter
-    template_name = 'project/shelter_list.html'  # Change this to match your template path
-    context_object_name = 'shelters'
-    paginate_by = 12
+    '''FilterShelterPage class uses ListView to display filtered shelter results based on search criteria'''
+    model = Shelter  # uses Shelter model
+    template_name = 'project/shelter_list.html'  # template page which will be rendered
+    context_object_name = 'shelters'  # name used to access shelters in template
+    paginate_by = 12  # number of shelters per page
     
     def get_queryset(self):
-        query = self.request.GET.get('q', '')
-        min_rating = self.request.GET.get('min_rating')
+        '''get_queryset method filters shelters based on search query and minimum rating'''
+        query = self.request.GET.get('q', '')  # gets search query parameter
+        min_rating = self.request.GET.get('min_rating')  # gets minimum rating filter
         
-        queryset = Shelter.objects.all()
+        queryset = Shelter.objects.all()  # starts with all shelters
 
+        # Applies text search filter
         if query:
             queryset = queryset.filter(
                 Q(name__icontains=query) |
                 Q(location__icontains=query) |
                 Q(description__icontains=query)
             ) 
+        # Applies rating filter if specified
         if min_rating:
             queryset = queryset.filter(average_rating__gte=min_rating)
             
-        return queryset.order_by('-average_rating')  # Sort by rating by default
+        return queryset.order_by('-average_rating')  # orders by rating descending
     
     def get_context_data(self, **kwargs):
+        '''get_context_data method preserves search parameters in context for pagination and form pre-filling'''
         context = super().get_context_data(**kwargs)
         context['current_rating'] = self.request.GET.get('min_rating', '')
         context['current_query'] = self.request.GET.get('q', '')
         return context
-    
 
 class CreateShelterReviewView(LoginRequiredMixin, CreateView):
-    model = ShelterReview
-    form_class = ShelterReviewForm
-    template_name = 'project/shelter_review_create.html'
+    '''CreateShelterReviewView class uses CreateView to handle new shelter review submissions.
+    LoginRequiredMixin ensures only authenticated users can create reviews'''
+    model = ShelterReview  # uses ShelterReview model
+    form_class = ShelterReviewForm  # form class to handle review creation
+    template_name = 'project/shelter_review_create.html'  # template page which will be rendered
     
     def get_context_data(self, **kwargs):
+        '''get_context_data method adds the shelter being reviewed to the template context'''
         context = super().get_context_data(**kwargs)
         context['shelter'] = get_object_or_404(Shelter, pk=self.kwargs['shelter_id'])
         return context
     
     def form_valid(self, form):
-        form.instance.user = self.request.user
-        form.instance.shelter = get_object_or_404(Shelter, pk=self.kwargs['shelter_id'])
-        form.instance.date_posted = timezone.now()
+        '''form_valid method sets review author and shelter, updates shelter rating after saving'''
+        form.instance.user = self.request.user  # sets the reviewing user
+        form.instance.shelter = get_object_or_404(Shelter, pk=self.kwargs['shelter_id'])  # sets the shelter
+        form.instance.date_posted = timezone.now()  # sets review timestamp
         response = super().form_valid(form)
-        self.update_shelter_rating(form.instance.shelter)
+        self.update_shelter_rating(form.instance.shelter)  # updates shelter's average rating
         return response
     
     def get_success_url(self):
+        '''get_success_url method redirects to shelter detail page after successful review'''
         return reverse_lazy('shelter', kwargs={'pk': self.kwargs['shelter_id']})
         
     def update_shelter_rating(self, shelter):
-        reviews = ShelterReview.objects.filter(shelter=shelter)
-        avg_rating = reviews.aggregate(Avg('rating'))['rating__avg']
-        shelter.average_rating = round(avg_rating) if avg_rating else 0
+        '''update_shelter_rating method recalculates and updates shelter's average rating'''
+        reviews = ShelterReview.objects.filter(shelter=shelter)  # gets all reviews for shelter
+        avg_rating = reviews.aggregate(Avg('rating'))['rating__avg']  # calculates average rating
+        shelter.average_rating = round(avg_rating) if avg_rating else 0  # updates shelter's rating
         shelter.save()
+
 class UpdateShelterReviewView(LoginRequiredMixin, UpdateView):
-    model = ShelterReview
-    form_class = ShelterReviewForm
-    template_name = 'project/shelter_review_edit.html'
+    '''UpdateShelterReviewView class uses UpdateView to handle editing of existing shelter reviews.
+    LoginRequiredMixin ensures only authenticated users can edit reviews'''
+    model = ShelterReview  # uses ShelterReview model
+    form_class = ShelterReviewForm  # form class to handle review editing
+    template_name = 'project/shelter_review_edit.html'  # template page which will be rendered
     
     def dispatch(self, request, *args, **kwargs):
+        '''dispatch method ensures only the review author can edit the review'''
         review = self.get_object()
         if request.user != review.user:
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
+        '''get_context_data method adds the shelter being reviewed to the template context'''
         context = super().get_context_data(**kwargs)
         context['shelter'] = self.get_object().shelter
         return context
     
     def form_valid(self, form):
+        '''form_valid method updates shelter rating after saving edited review'''
         response = super().form_valid(form)
         self.update_shelter_rating(self.object.shelter)
         return response
     
     def get_success_url(self):
+        '''get_success_url method redirects to shelter detail page after successful edit'''
         return reverse_lazy('shelter', kwargs={'pk': self.object.shelter.pk})
     
     def update_shelter_rating(self, shelter):
+        '''update_shelter_rating method recalculates and updates shelter's average rating'''
         reviews = ShelterReview.objects.filter(shelter=shelter)
         avg_rating = reviews.aggregate(Avg('rating'))['rating__avg']
         shelter.average_rating = round(avg_rating) if avg_rating else 0
         shelter.save()
 
 class DeleteShelterReviewView(LoginRequiredMixin, DeleteView):
-    model = ShelterReview
-    template_name = 'project/shelter_review_delete.html'
+    '''DeleteShelterReviewView class uses DeleteView to handle deletion of shelter reviews.
+    LoginRequiredMixin ensures only authenticated users can delete reviews'''
+    model = ShelterReview  # uses ShelterReview model
+    template_name = 'project/shelter_review_delete.html'  # template page which will be rendered
     
     def dispatch(self, request, *args, **kwargs):
+        '''dispatch method ensures only the review author can delete the review'''
         review = self.get_object()
         if request.user != review.user:
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
     
     def get_context_data(self, **kwargs):
+        '''get_context_data method adds review and shelter information to the template context'''
         context = super().get_context_data(**kwargs)
         context['review'] = self.get_object()
         context['shelter'] = self.get_object().shelter
         return context
     
     def get_success_url(self):
+        '''get_success_url method redirects to shelter detail page after successful deletion'''
         return reverse_lazy('shelter', kwargs={'pk': self.object.shelter.pk})
     
     def delete(self, request, *args, **kwargs):
+        '''delete method updates shelter rating after deleting review'''
         response = super().delete(request, *args, **kwargs)
         self.update_shelter_rating(self.object.shelter)
         return response
     
     def update_shelter_rating(self, shelter):
+        '''update_shelter_rating method recalculates and updates shelter's average rating'''
         reviews = ShelterReview.objects.filter(shelter=shelter)
         avg_rating = reviews.aggregate(Avg('rating'))['rating__avg']
         shelter.average_rating = round(avg_rating) if avg_rating else 0
         shelter.save()
+class ShelterReportView(TemplateView):
+    '''Generates comprehensive analytics report about shelter performance, pet adoption trends, 
+    and overall system statistics'''
+    template_name = 'project/shelters_report.html'  # template page which will be rendered
+     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        # Overall shelter statistics
+        context['total_shelters'] = Shelter.objects.count()
+        context['avg_shelter_rating'] = ShelterReview.objects.aggregate(
+            Avg('rating'))['rating__avg']
+
+        # Pet statistics
+        context['total_pets'] = Pet.objects.count()
+        context['pets_by_type'] = Pet.objects.values('pet_type').annotate(
+            count=Count('id')).order_by('-count')
+        
+        # Get adoption statistics through AdoptionRequest model
+        adoption_requests = AdoptionRequest.objects.all()
+        context['total_adoption_requests'] = adoption_requests.count()
+        context['pending_requests'] = adoption_requests.filter(
+            status='PENDING').count()
+        context['approved_requests'] = adoption_requests.filter(
+            status='APPROVED').count()
+        
+        # Calculate available pets (those without approved adoption requests)
+        pets_with_approved_adoptions = AdoptionRequest.objects.filter(
+            status='APPROVED').values_list('pet_id', flat=True)
+        context['available_pets'] = Pet.objects.exclude(
+            id__in=pets_with_approved_adoptions).count()
+        
+        return context

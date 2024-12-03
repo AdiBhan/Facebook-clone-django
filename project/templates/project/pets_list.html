@@ -1,3 +1,5 @@
+ <!--  ./templates/project/pets_list.html  -->
+
 {% extends 'project/base.html' %}
 
 {% block title %}Available Pets{% endblock %}
@@ -69,7 +71,7 @@
 {% if is_paginated %}
 <div class="pagination">
     {% if page_obj.has_previous %}
-        <a href="?page=1" class="btn btn-small">&laquo; First</a>
+        
         <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-small">Previous</a>
     {% endif %}
 
@@ -79,7 +81,6 @@
 
     {% if page_obj.has_next %}
         <a href="?page={{ page_obj.next_page_number }}" class="btn btn-small">Next</a>
-        <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-small">Last &raquo;</a>
     {% endif %}
 </div>
 {% endif %}

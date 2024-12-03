@@ -1,0 +1,55 @@
+
+ <!--  ./templates/project/shelters_report.html  -->
+
+ {% extends 'project/base.html' %}
+ {% load static %}
+
+{% block content %}
+<div class="analytics-container">
+    <h1 class="report-title">Shelter System Analytics Report</h1>
+
+    <div class="grid-container">
+        <!-- Shelter Statistics -->
+        <div class="stats-card">
+            <h2 class="stats-title">Shelter Statistics</h2>
+            <div class="stats-value">{{ total_shelters }}</div>
+            <p class="stats-label">Total Shelters</p>
+            <div class="stats-value">{{ avg_shelter_rating|floatformat:1 }}</div>
+            <p class="stats-label">Average Rating</p>
+        </div>
+        
+        <!-- Pet Statistics -->
+        <div class="stats-card">
+            <h2 class="stats-title">Pet Statistics</h2>
+            <div class="stats-value">{{ total_pets }}</div>
+            <p class="stats-label">Total Pets</p>
+        </div>
+
+        <!-- Adoption Statistics -->
+        <div class="stats-card">
+            <h2 class="stats-title">Adoption Statistics</h2>
+            <div class="stats-value">{{ total_adoption_requests }}</div>
+            <p class="stats-label">Total Requests</p>
+            <div class="stats-value">{{ pending_requests }}</div>
+            <p class="stats-label">Pending Requests</p>
+            <div class="stats-value">{{ approved_requests }}</div>
+            <p class="stats-label">Approved Requests</p>
+        </div>
+    </div>
+
+    <!-- Pet Distribution -->
+    <div class="stats-card">
+        <h2 class="stats-title">Pet Distribution by Type</h2>
+        <div class="grid-container">
+            {% for pet_type in pets_by_type %}
+            <div>
+                <div class="stats-value">{{ pet_type.count }}</div>
+                <p class="stats-label">{{ pet_type.pet_type }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

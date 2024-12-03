@@ -92,4 +92,6 @@ urlpatterns =  [
          views.DeleteShelterReviewView.as_view(), 
          name="delete_shelter_review"),
     #_______________________________________________________________
+    
+     path('analytics/shelter-report/', views.ShelterReportView.as_view(), name='shelter_report'),
 ]
