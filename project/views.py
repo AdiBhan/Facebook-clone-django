@@ -108,16 +108,6 @@ class ViewMyAdoptionPage(LoginRequiredMixin, DetailView):
         '''get_queryset method ensures users can only view their own adoption requests'''
         return AdoptionRequest.objects.filter(user=self.request.user)
 
-class ViewAdoptionPage(LoginRequiredMixin, ListView):
-    '''ViewAdoptionPage class uses ListView to show adoption requests for shelter employees.
-    LoginRequiredMixin ensures only authenticated users can access this view'''
-    model = AdoptionRequest  # uses AdoptionRequest model
-    template_name = 'project/adoption_list.html'  # template page which will be rendered
-    context_object_name = 'adoptions'  # name used to access adoptions in template
-    
-    def get_queryset(self):
-        '''get_queryset method filters adoption requests to show only those for the employee's shelter'''
-        return AdoptionRequest.objects.filter(shelter=self.request.user)
 
 class CreateAdoptionPage(LoginRequiredMixin, CreateView):
     '''CreateAdoptionPage class uses CreateView to handle new adoption request submissions.
@@ -130,7 +120,7 @@ class CreateAdoptionPage(LoginRequiredMixin, CreateView):
         '''get_context_data method adds the pet being adopted to the template context'''
         context = super().get_context_data(**kwargs)
         context['pet'] = get_object_or_404(Pet, pk=self.kwargs['pet_id'])  # gets pet by ID or returns 404
-        return context
+        return context # return updated context object
     
     def form_valid(self, form):
         '''form_valid method populates additional fields before saving the adoption request'''
@@ -218,9 +208,9 @@ class DeleteCommentView(LoginRequiredMixin, DeleteView):
     def dispatch(self, request, *args, **kwargs):
         '''dispatch method ensures only the comment author can delete the comment'''
         comment = self.get_object()
-        if request.user != comment.user:
-            raise PermissionDenied
-        return super().dispatch(request, *args, **kwargs)
+        if request.user != comment.user: # if user isn't the author (the foreign key of the comment and user don't match)
+            raise PermissionDenied # return permission denied
+        return super().dispatch(request, *args, **kwargs) # otherwise successful
     
     def get_success_url(self):
         '''get_success_url method redirects to pet detail page after successful deletion'''
@@ -236,7 +226,7 @@ class UpdateCommentView(LoginRequiredMixin, UpdateView):
     def dispatch(self, request, *args, **kwargs):
         '''dispatch method ensures only the comment author can edit the comment'''
         comment = self.get_object()
-        if request.user != comment.user:
+        if request.user != comment.user: ##  if user isn't the author (the foreign key of the comment and user don't match)
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
     
@@ -244,7 +234,7 @@ class UpdateCommentView(LoginRequiredMixin, UpdateView):
         '''get_context_data method adds the pet being commented on to the template context'''
         context = super().get_context_data(**kwargs)
         context['pet'] = self.object.pet  # adds pet to context
-        return context
+        return context # return updated coontext object
     
     def get_success_url(self):
         '''get_success_url method redirects to pet detail page after successful edit'''
@@ -268,7 +258,7 @@ class FilterPetPage(ListView):
         
         queryset = Pet.objects.all()  # starts with all pets
         
-        # Applies text search filter
+        # Applies text search filter based on name, breed and description
         if query:
             queryset = queryset.filter(
                 Q(name__icontains=query) |
@@ -276,29 +266,33 @@ class FilterPetPage(ListView):
                 Q(description__icontains=query)
             )
         
-        # Applies additional filters if specified
+        # If pet type exists, we filter by pet_type
         if pet_type:
             queryset = queryset.filter(pet_type=pet_type)
+            
+        # If shelter exists, we filter by shelter
         if shelter:
             queryset = queryset.filter(shelter=shelter)
+            
+        # If min_age or max_age exists, we filter by age range.
         if min_age:
             queryset = queryset.filter(age__gte=min_age)
         if max_age:
             queryset = queryset.filter(age__lte=max_age)
 
-        return queryset
+        return queryset # return any filtered data found
 
     def get_context_data(self, **kwargs):
-        '''get_context_data method preserves search parameters in context for pagination and form pre-filling'''
+        '''get_context_data() method preserves search parameters in context for pagination and form pre-filling'''
         context = super().get_context_data(**kwargs)
         context['shelters'] = Shelter.objects.all()  # adds all shelters for dropdown
         # Preserves search parameters
-        context['current_type'] = self.request.GET.get('pet_type', '')
-        context['current_shelter'] = self.request.GET.get('shelter', '')
-        context['current_min_age'] = self.request.GET.get('min_age', '')
-        context['current_max_age'] = self.request.GET.get('max_age', '')
-        context['current_query'] = self.request.GET.get('q', '')
-        return context
+        context['current_type'] = self.request.GET.get('pet_type', '') # check if 'pet_type' exists in current record and save it to current_type variable in context, else save as empty string
+        context['current_shelter'] = self.request.GET.get('shelter', '')  # check if 'shelter' exists in current record and save it to current_shelter variable in context, else save as empty string
+        context['current_min_age'] = self.request.GET.get('min_age', '') # check if 'min_age' exists in current record and save it to current_min_age variable in context, else save as empty string
+        context['current_max_age'] = self.request.GET.get('max_age', '')  # check if 'max_age' exists in current record and save it to current_max_age variable in context, else save as empty string
+        context['current_query'] = self.request.GET.get('q', '')  # check if 'q' exists in current record and save it to current_query variable in context, else savve as empty string
+        return context # save updated context object
 
 class FilterShelterPage(ListView):
     '''FilterShelterPage class uses ListView to display filtered shelter results based on search criteria'''
@@ -314,25 +308,26 @@ class FilterShelterPage(ListView):
         
         queryset = Shelter.objects.all()  # starts with all shelters
 
-        # Applies text search filter
+         
+        # Applies text search filter based on name, location  and description
         if query:
             queryset = queryset.filter(
                 Q(name__icontains=query) |
                 Q(location__icontains=query) |
                 Q(description__icontains=query)
             ) 
-        # Applies rating filter if specified
+        # If min rating is found, we filter queryset by min rating
         if min_rating:
             queryset = queryset.filter(average_rating__gte=min_rating)
             
-        return queryset.order_by('-average_rating')  # orders by rating descending
+        return queryset.order_by('-average_rating')  # return filtered data in descending order by average rating
     
     def get_context_data(self, **kwargs):
         '''get_context_data method preserves search parameters in context for pagination and form pre-filling'''
         context = super().get_context_data(**kwargs)
         context['current_rating'] = self.request.GET.get('min_rating', '')
         context['current_query'] = self.request.GET.get('q', '')
-        return context
+        return context # save updated context object
 
 class CreateShelterReviewView(LoginRequiredMixin, CreateView):
     '''CreateShelterReviewView class uses CreateView to handle new shelter review submissions.
@@ -345,7 +340,7 @@ class CreateShelterReviewView(LoginRequiredMixin, CreateView):
         '''get_context_data method adds the shelter being reviewed to the template context'''
         context = super().get_context_data(**kwargs)
         context['shelter'] = get_object_or_404(Shelter, pk=self.kwargs['shelter_id'])
-        return context
+        return context # save updated context object
     
     def form_valid(self, form):
         '''form_valid method sets review author and shelter, updates shelter rating after saving'''
@@ -365,7 +360,7 @@ class CreateShelterReviewView(LoginRequiredMixin, CreateView):
         reviews = ShelterReview.objects.filter(shelter=shelter)  # gets all reviews for shelter
         avg_rating = reviews.aggregate(Avg('rating'))['rating__avg']  # calculates average rating
         shelter.average_rating = round(avg_rating) if avg_rating else 0  # updates shelter's rating
-        shelter.save()
+        shelter.save() # save shelter row 
 
 class UpdateShelterReviewView(LoginRequiredMixin, UpdateView):
     '''UpdateShelterReviewView class uses UpdateView to handle editing of existing shelter reviews.
@@ -377,20 +372,20 @@ class UpdateShelterReviewView(LoginRequiredMixin, UpdateView):
     def dispatch(self, request, *args, **kwargs):
         '''dispatch method ensures only the review author can edit the review'''
         review = self.get_object()
-        if request.user != review.user:
+        if request.user != review.user: # if user isn't the review author (foreign key of review author isn't same as user) return Permission Denied
             raise PermissionDenied
-        return super().dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs) # else they have permission
     
     def get_context_data(self, **kwargs):
         '''get_context_data method adds the shelter being reviewed to the template context'''
         context = super().get_context_data(**kwargs)
-        context['shelter'] = self.get_object().shelter
-        return context
+        context['shelter'] = self.get_object().shelter # Add 'shelter' variable to context to be accessed in template
+        return context # return context object
     
     def form_valid(self, form):
         '''form_valid method updates shelter rating after saving edited review'''
         response = super().form_valid(form)
-        self.update_shelter_rating(self.object.shelter)
+        self.update_shelter_rating(self.object.shelter) # call update_shelter_rating() helper function to update rating
         return response
     
     def get_success_url(self):
@@ -400,8 +395,8 @@ class UpdateShelterReviewView(LoginRequiredMixin, UpdateView):
     def update_shelter_rating(self, shelter):
         '''update_shelter_rating method recalculates and updates shelter's average rating'''
         reviews = ShelterReview.objects.filter(shelter=shelter)
-        avg_rating = reviews.aggregate(Avg('rating'))['rating__avg']
-        shelter.average_rating = round(avg_rating) if avg_rating else 0
+        avg_rating = reviews.aggregate(Avg('rating'))['rating__avg'] # calculate aggregate of average ratings
+        shelter.average_rating = round(avg_rating) if avg_rating else 0 # round rating to nearest whole number so it can fit in 1-5
         shelter.save()
 
 class DeleteShelterReviewView(LoginRequiredMixin, DeleteView):
@@ -413,16 +408,16 @@ class DeleteShelterReviewView(LoginRequiredMixin, DeleteView):
     def dispatch(self, request, *args, **kwargs):
         '''dispatch method ensures only the review author can delete the review'''
         review = self.get_object()
-        if request.user != review.user:
-            raise PermissionDenied
-        return super().dispatch(request, *args, **kwargs)
+        if request.user != review.user:  # if user isn't the review author (foreign key of review author isn't same as user) return Permission Denied
+            raise PermissionDenied  # return permission denied
+        return super().dispatch(request, *args, **kwargs) # else return, they have permission
     
     def get_context_data(self, **kwargs):
         '''get_context_data method adds review and shelter information to the template context'''
         context = super().get_context_data(**kwargs)
-        context['review'] = self.get_object()
-        context['shelter'] = self.get_object().shelter
-        return context
+        context['review'] = self.get_object() # add 'review' variable to context to access in shelter_review_delete template
+        context['shelter'] = self.get_object().shelter  # add 'shelter' variable to context to access in shelter_review_delete template
+        return context # return context object
     
     def get_success_url(self):
         '''get_success_url method redirects to shelter detail page after successful deletion'''
@@ -431,15 +426,15 @@ class DeleteShelterReviewView(LoginRequiredMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         '''delete method updates shelter rating after deleting review'''
         response = super().delete(request, *args, **kwargs)
-        self.update_shelter_rating(self.object.shelter)
+        self.update_shelter_rating(self.object.shelter)  # call update_shelter_rating() helper function to update rating
         return response
     
     def update_shelter_rating(self, shelter):
         '''update_shelter_rating method recalculates and updates shelter's average rating'''
         reviews = ShelterReview.objects.filter(shelter=shelter)
-        avg_rating = reviews.aggregate(Avg('rating'))['rating__avg']
-        shelter.average_rating = round(avg_rating) if avg_rating else 0
-        shelter.save()
+        avg_rating = reviews.aggregate(Avg('rating'))['rating__avg']  # calculate aggregate of average ratings
+        shelter.average_rating = round(avg_rating) if avg_rating else 0 # round rating to nearest whole number so it can fit in 1-5
+        shelter.save() # save shelter data
 class ShelterReportView(TemplateView):
     '''Generates comprehensive analytics report about shelter performance, pet adoption trends, 
     and overall system statistics'''
@@ -472,4 +467,4 @@ class ShelterReportView(TemplateView):
         context['available_pets'] = Pet.objects.exclude(
             id__in=pets_with_approved_adoptions).count()
         
-        return context
+        return context # return updated context object

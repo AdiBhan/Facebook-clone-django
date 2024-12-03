@@ -44,13 +44,9 @@ urlpatterns =  [
     # Adoption Routes
     #_______________________________________________________________
     # Route for Shelters to View all adoptions
-    path("adoptions/", views.ViewAdoptionPage.as_view(), name="view_adoptions"),
     # Route for pet owners to adopt a Pet
     path("adoptions/<int:pet_id>/", views.CreateAdoptionPage.as_view(), name="view_adoption"),
-    #_______________________________________________________________
     
-    # Adoption View Routes
-    #_______________________________________________________________
     # Route for pet owners to view their adoptions
     path("my_adoptions/", views.ViewMyAdoptionsPage.as_view(), name="view_my_adoptions"),
     # Route for pet owners to view their adoptions
