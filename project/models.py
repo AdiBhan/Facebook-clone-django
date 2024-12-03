@@ -71,11 +71,3 @@ class AdoptionRequest(models.Model):
     def __str__(self):
         return f"Adoption request for {self.pet} by {self.user} - {self.status}"
     
-class PetStory(models.Model):
-    pet = models.ForeignKey(Pet, blank=True, null=True, on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
-    story = models.TextField()
-    date_posted = models.DateTimeField(auto_now_add=True)
-    
-    def __str__(self):
-        return f"{self.title} - {self.pet}"
