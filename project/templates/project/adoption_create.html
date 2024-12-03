@@ -1,0 +1,49 @@
+{% extends 'project/base.html' %}
+{% load static %}
+
+{% block title %}Adopt {{ pet.name }}{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="adoption-header">
+        <h1>Adopt {{ pet.name }}</h1>
+        
+        <div class="pet-summary">
+            <div class="pet-image">
+                {% if pet.image %}
+                    <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
+                {% else %}
+                    <img src="{% static 'images/pet-placeholder.jpg' %}" alt="No image available">
+                {% endif %}
+            </div>
+            <div class="pet-info">
+                <h2>{{ pet.name }}</h2>
+                <p><i class="fas fa-paw"></i> {{ pet.get_pet_type_display }}</p>
+                <p><i class="fas fa-birthday-cake"></i> {{ pet.age }} years old</p>
+                <p><i class="fas fa-dog"></i> {{ pet.breed }}</p>
+                <p><i class="fas fa-home"></i> {{ pet.shelter.name }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="adoption-form">
+        <h2>Adoption Request</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="{{ form.notes.id_for_label }}">Why would you like to adopt {{ pet.name }}?</label>
+                {{ form.notes }}
+                {% if form.notes.errors %}
+                    <div class="form-errors">
+                        {{ form.notes.errors }}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="form-actions">
+                <a href="{% url 'pet' pet.id %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Submit Request</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

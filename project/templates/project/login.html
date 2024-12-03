@@ -1,0 +1,36 @@
+{% extends 'project/base.html' %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="login-box">
+        <h2>Login to PawMate</h2>
+        
+        <form method="post" class="login-form">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+                <div class="error-message">
+                    Your username and password didn't match. Please try again.
+                </div>
+            {% endif %}
+            
+            <div class="form-group">
+                <label for="id_username">Username:</label>
+                <input type="text" name="username" id="id_username" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_password">Password:</label>
+                <input type="password" name="password" id="id_password" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Login</button>
+            
+            <input type="hidden" name="next" value="{{ next }}">
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,4 +1,8 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+
+# Reference the User model
+User = get_user_model()
 
 class Shelter(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -30,18 +34,9 @@ class Pet(models.Model):
     def __str__(self):
         return f"{self.name} - {self.pet_type} ({self.breed})"
     
-class User(models.Model):
-    username = models.CharField(max_length=255)
-    email = models.EmailField(unique=True)
-    password = models.CharField(max_length=255)
-    join_date = models.DateField(null=True)
-    is_shelter_employee = models.BooleanField(default=False)
-    
-    def __str__(self):
-        return f"{self.username} ({self.email})"
-    
+
 class Comment(models.Model):
-    user = models.ForeignKey(User, blank=True, null=True, default=None, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  
     pet = models.ForeignKey(Pet, blank=True, null=True, default=None, on_delete=models.CASCADE)
     content = models.TextField()
     date_posted = models.DateTimeField()
@@ -70,4 +65,3 @@ class AdoptionRequest(models.Model):
     
     def __str__(self):
         return f"Adoption request for {self.pet} by {self.user} - {self.status}"
-    

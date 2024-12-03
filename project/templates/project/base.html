@@ -15,9 +15,9 @@
     <header>
         <nav class="navbar">
             <div class="nav-brand">
-                <a href="{% url 'home' %}">
+                <a href="{% url 'index' %}">
                     <i class="fas fa-paw"></i>
-                    <span>Pawmate </span>
+                    <span>Pawmate | Home </span>
                 </a>
             </div>
             <ul class="nav-links">
@@ -35,11 +35,17 @@
                             {{ user.username }}
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a href="{% url 'logout' %}">Logout</a></li>
+                            <li>
+                                <form method="post" action="{% url 'logout' %}" class="logout-form">
+                                    {% csrf_token %}
+                                    <button type="submit">Logout</button>
+                                </form>
+                            </li>
                         </ul>
                     </li>
                 {% else %}
                     <li><a href="{% url 'login' %}" class="btn btn-primary">Login</a></li>
+                    <li><a href="{% url 'register' %}" class="btn btn-secondary">Register</a></li>
                 {% endif %}
             </ul>
         </nav>

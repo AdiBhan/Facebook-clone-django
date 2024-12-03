@@ -1,62 +1,13 @@
 from django import forms
-from .models import ShelterReview
-
-
-
-from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from .models import Shelter, Pet, User, Comment, ShelterReview, AdoptionRequest
-
-class ShelterForm(forms.ModelForm):
-    class Meta:
-        model = Shelter
-        fields = ['name', 'address', 'contact_info', 'location', 'capacity', 'description']
-        widgets = {
-            'description': forms.Textarea(attrs={'rows': 4}),
-            'contact_info': forms.Textarea(attrs={'rows': 3}),
-        }
-
-    def clean_capacity(self):
-        capacity = self.cleaned_data.get('capacity')
-        if capacity < 0:
-            raise forms.ValidationError("Capacity cannot be negative")
-        return capacity
-
-class PetForm(forms.ModelForm):
-    class Meta:
-        model = Pet
-        fields = ['name', 'age', 'breed', 'image', 'pet_type', 'description']
-        widgets = {
-            'description': forms.Textarea(attrs={'rows': 4}),
-            'pet_type': forms.Select(choices=Pet.PET_TYPES),
-            'age': forms.NumberInput(attrs={'min': 0}),
-        }
-
-    def clean_age(self):
-        age = self.cleaned_data.get('age')
-        if age < 0:
-            raise forms.ValidationError("Age cannot be negative")
-        return age
-
-class CustomUserCreationForm(UserCreationForm):
-    email = forms.EmailField(required=True)
-    is_shelter_employee = forms.BooleanField(required=False)
-
-    class Meta:
-        model = User
-        fields = ['username', 'email', 'password1', 'password2', 'is_shelter_employee']
-
-    def clean_email(self):
-        email = self.cleaned_data.get('email')
-        if User.objects.filter(email=email).exists():
-            raise forms.ValidationError("Email already exists")
-        return email
+from .models import Pet, User, Comment, ShelterReview, AdoptionRequest
 
 class CommentForm(forms.ModelForm):
+    '''CommentForm renders a form with a 'content' TextArea field where users can write out and type comments'''
     class Meta:
-        model = Comment
-        fields = ['content']
-        widgets = {
+        model = Comment   ## CommentForm based on the comment model
+        fields = ['content']  # fields we need access too
+        widgets = {  ## JSON object/Dictionary with each field and the corresponding widget
             'content': forms.Textarea(attrs={
                 'rows': 3,
                 'placeholder': 'Write your comment here...'
@@ -64,6 +15,9 @@ class CommentForm(forms.ModelForm):
         }
 
 class ShelterReviewForm(forms.ModelForm):
+    '''ShelterReviewForm renders a form with:
+        1. 'rating' input field where users can select between 1-5 overall rating for the shelter
+        2. a 'review_text' TextArea field where users can give more in-depth feedback to the shelter'''
     class Meta:
         model = ShelterReview
         fields = ['rating', 'review_text']
@@ -79,15 +33,12 @@ class ShelterReviewForm(forms.ModelForm):
             })
         }
 
-    def clean_rating(self):
-        rating = self.cleaned_data.get('rating')
-        if rating < 1 or rating > 5:
-            raise forms.ValidationError("Rating must be between 1 and 5")
-        return rating
-
 class AdoptionRequestForm(forms.ModelForm):
+    '''AdoptionRequestForm renders a form that allows users to submit adoption requests with:
+        1. A 'notes' TextArea field where potential adopters can explain why they would be good pet parents
+        This form is used in the adoption application process'''
     class Meta:
-        model = AdoptionRequest
+        model = AdoptionRequest   ## AdoptionRequestForm based on the AdoptionRequest model
         fields = ['notes']
         widgets = {
             'notes': forms.Textarea(attrs={
@@ -97,6 +48,11 @@ class AdoptionRequestForm(forms.ModelForm):
         }
 
 class PetSearchForm(forms.Form):
+    '''PetSearchForm provides a search interface for pets with:
+        1. A text search field for general queries
+        2. A pet type filter dropdown using predefined PET_TYPES
+        3. A maximum age filter for finding pets under a specific age
+        This form helps users narrow down pet listings based on their preferences'''
     search_query = forms.CharField(
         required=False,
         widget=forms.TextInput(attrs={'placeholder': 'Search pets...'})
@@ -111,6 +67,11 @@ class PetSearchForm(forms.Form):
     )
 
 class ShelterSearchForm(forms.Form):
+    '''ShelterSearchForm enables users to search for shelters with:
+        1. A text search field for shelter names
+        2. A location field to find nearby shelters
+        3. A minimum rating filter to find highly-rated shelters
+        This form helps users find shelters that match their criteria and location preferences'''
     search_query = forms.CharField(
         required=False,
         widget=forms.TextInput(attrs={'placeholder': 'Search shelters...'})
@@ -127,13 +88,22 @@ class ShelterSearchForm(forms.Form):
             'placeholder': 'Minimum rating'
         })
     )
-    
-    
-class ShelterReviewForm(forms.ModelForm):
+
+class UserRegistrationForm(UserCreationForm):
+    '''UserRegistrationForm extends Django's UserCreationForm to handle user registration with:
+        1. Username field
+        2. Email field (required)
+        3. Password fields with confirmation
+        Includes custom email validation to prevent duplicate registrations'''
+    email = forms.EmailField(required=True)
     class Meta:
-        model = ShelterReview
-        fields = ['rating', 'review_text']
-        widgets = {
-            'rating': forms.NumberInput(attrs={'min': 1, 'max': 5}),
-            'review_text': forms.Textarea(attrs={'rows': 4}),
-        }
+        model = User  #
+        fields = ['username', 'email', 'password1', 'password2']
+
+    def clean_email(self):
+        '''clean_email() method validates that the email isn't already registered in the system'''
+        
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("This email is already registered.")
+        return email

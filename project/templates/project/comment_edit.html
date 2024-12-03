@@ -1,0 +1,37 @@
+{% extends 'project/base.html' %}
+{% load static %}
+
+{% block title %}Edit Comment{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="comment-header">
+        <h2>Edit Comment</h2>
+    </div>
+
+   
+
+    <div class="comment-form">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="id_content">Your Comment:</label>
+                <textarea name="content" id="id_content" class="form-control" rows="4">{{ form.content.value }}</textarea>
+                {% if form.content.errors %}
+                    <div class="form-errors">
+                        {% for error in form.content.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-actions">
+                <a href="{% url 'pet' pet.id %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Update Comment</button>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'project/base.html' %}
+{% load static %}
+
+{% block title %}My Adoption Requests{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <h1>My Adoption Requests</h1>
+
+    <div class="adoptions-list">
+        {% for adoption in adoptions %}
+            <div class="adoption-card">
+                <div class="pet-info">
+                    {% if adoption.pet.image %}
+                        <img src="{{ adoption.pet.image.url }}" alt="{{ adoption.pet.name }}" class="pet-thumbnail">
+                    {% endif %}
+                    <div class="pet-details">
+                        <h3>{{ adoption.pet.name }}</h3>
+                        <p>{{ adoption.pet.breed }} • {{ adoption.pet.age }} years old</p>
+                        <p class="shelter-name">{{ adoption.pet.shelter.name }}</p>
+                    </div>
+                </div>
+
+                <div class="adoption-details">
+                    <p class="adoption-status status-{{ adoption.status|lower }}">
+                        Status: {{ adoption.status }}
+                    </p>
+                    <p class="adoption-date">
+                        Requested on: {{ adoption.date_requested|date:"F j, Y" }}
+                    </p>
+                    {% if adoption.status == 'APPROVED' %}
+                        <p class="approval-date">
+                            Approved on: {{ adoption.date_approved|date:"F j, Y" }}
+                        </p>
+                    {% endif %}
+                    {% if adoption.notes %}
+                        <div class="adoption-notes">
+                            <p>Your message:</p>
+                            <p>{{ adoption.notes }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if adoption.status == 'PENDING' %}
+                <div class="adoption-actions">
+                    <form method="post" action="{% url 'cancel_adoption' adoption.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Cancel Request</button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+        {% empty %}
+            <div class="no-adoptions">
+                <p>You haven't made any adoption requests yet.</p>
+                <a href="{% url 'pets' %}" class="btn btn-primary">Browse Available Pets</a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

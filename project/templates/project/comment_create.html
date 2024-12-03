@@ -1,0 +1,33 @@
+{% extends 'project/base.html' %}
+{% load static %}
+
+{% block title %}Comment on {{ pet.name }}{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="comment-header">
+        <h1>Add a Comment</h1>
+        
+       
+    </div>
+
+    <div class="comment-form">
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="{{ form.content.id_for_label }}">Your Comment:</label>
+                {{ form.content }}
+                {% if form.content.errors %}
+                    <div class="form-errors">
+                        {{ form.content.errors }}
+                    </div>
+                {% endif %}
+            </div>
+            <div class="form-actions">
+                <a href="{% url 'pet' pet.id %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Post Comment</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

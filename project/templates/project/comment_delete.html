@@ -1,0 +1,29 @@
+{% extends 'project/base.html' %}
+
+{% block title %}Delete Comment{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="comment-header">
+        <h1>Delete Comment</h1>
+    </div>
+
+    <div class="comment-to-delete">
+        <div class="comment">
+            <div class="comment-header">
+                <span class="comment-author">{{ comment.user.username }}</span>
+                <span class="comment-date">{{ comment.date_posted|date:"M d, Y H:i" }}</span>
+            </div>
+            <p>{{ comment.content }}</p>
+        </div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-actions">
+            <a href="{% url 'pet' comment.pet.pk %}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

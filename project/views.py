@@ -1,14 +1,22 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
-from django.db.models import Q
+from django.core.exceptions import PermissionDenied
+from django.db.models import Avg, Q
 from .models import Shelter, Pet, AdoptionRequest, Comment, ShelterReview
-from .forms import PetForm, ShelterForm, AdoptionRequestForm, CommentForm, ShelterReviewForm
-from django.db.models import Avg
+from .forms import AdoptionRequestForm, CommentForm, ShelterReviewForm, UserRegistrationForm
+from django.utils import timezone
+from django.contrib.auth import login
+class RegisterView(CreateView):
+    template_name = 'registration/register.html'
+    form_class = UserRegistrationForm
+    success_url = '/'
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        return redirect('index')
 
 class HomePage(TemplateView):
     template_name = 'project/index.html'
@@ -36,27 +44,7 @@ class ShowShelterPage(DetailView):
         context['pets'] = Pet.objects.filter(shelter=self.object)
         context['reviews'] = ShelterReview.objects.filter(shelter=self.object)
         return context
-
-class CreateSheltersPage(LoginRequiredMixin, UserPassesTestMixin, CreateView):
-    model = Shelter
-    form_class = ShelterForm
-    template_name = 'project/shelter_create.html'
-    success_url = reverse_lazy('shelters')
     
-    def test_func(self):
-        return self.request.user.is_shelter_employee
-
-class UpdateShelterPage(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Shelter
-    form_class = ShelterForm
-    template_name = 'project/shelter_update.html'
-    
-    def test_func(self):
-        return self.request.user.is_shelter_employee
-    
-    def get_success_url(self):
-        return reverse_lazy('shelter', kwargs={'pk': self.object.pk})
-
 # Pet Views
 class ShowPetsPage(ListView):
     model = Pet
@@ -75,33 +63,6 @@ class ShowPetPage(DetailView):
         context['adoption_form'] = AdoptionRequestForm()
         return context
 
-class CreatePetsPage(LoginRequiredMixin, UserPassesTestMixin, CreateView):
-    model = Pet
-    form_class = PetForm
-    template_name = 'project/pets_create.html'
-    
-    def test_func(self):
-        return self.request.user.is_shelter_employee
-    
-    def form_valid(self, form):
-        form.instance.shelter = self.request.user.shelter
-        return super().form_valid(form)
-
-class UpdatePetPage(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = Pet
-    form_class = PetForm
-    template_name = 'project/pets_update.html'
-    
-    def test_func(self):
-        return self.request.user.is_shelter_employee and self.get_object().shelter == self.request.user.shelter
-
-class DeletePetPage(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
-    model = Pet
-    template_name = 'project/pets_delete.html'
-    success_url = reverse_lazy('pets')
-    
-    def test_func(self):
-        return self.request.user.is_shelter_employee and self.get_object().shelter == self.request.user.shelter
 
 # Adoption Views
 
@@ -128,17 +89,18 @@ class ViewAdoptionPage(LoginRequiredMixin, ListView):
     context_object_name = 'adoptions'
     
     def get_queryset(self):
-        if self.request.user.is_shelter_employee:
             # Shelter employees see adoptions for their shelter
-            return AdoptionRequest.objects.filter(shelter=self.request.user.shelter)
-        else:
-            # Regular users see their own adoptions
-            return AdoptionRequest.objects.filter(user=self.request.user)
+            return AdoptionRequest.objects.filter(shelter=self.request.user)
 
 class CreateAdoptionPage(LoginRequiredMixin, CreateView):
     model = AdoptionRequest
     form_class = AdoptionRequestForm
     template_name = 'project/adoption_create.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['pet'] = get_object_or_404(Pet, pk=self.kwargs['pet_id'])
+        return context
     
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -150,35 +112,21 @@ class CreateAdoptionPage(LoginRequiredMixin, CreateView):
     
     def get_success_url(self):
         return reverse_lazy('view_my_adoptions')
-class UpdateAdoptionView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
-    model = AdoptionRequest
-    fields = ['status', 'notes']
-    template_name = 'project/adoption_update.html'
-    pk_url_kwarg = 'adoption_id'
-    
-    def test_func(self):
-        adoption = self.get_object()
-        return self.request.user.is_shelter_employee and adoption.shelter == self.request.user.shelter
-    
-    def form_valid(self, form):
-        if form.instance.status == 'APPROVED':
-            form.instance.date_approved = timezone.now()
-        return super().form_valid(form)
-    
-    def get_success_url(self):
-        return reverse_lazy('view_adoptions')
 
-class DeleteAdoptionPage(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+
+
+class DeleteAdoptionRequestView(LoginRequiredMixin, DeleteView):
     model = AdoptionRequest
     template_name = 'project/adoption_delete.html'
     pk_url_kwarg = 'adoption_id'
-    success_url = reverse_lazy('view_adoptions')
-    
-    def test_func(self):
+    success_url = reverse_lazy('view_my_adoptions')
+
+    def dispatch(self, request, *args, **kwargs):
         adoption = self.get_object()
-        return (self.request.user.is_shelter_employee and 
-                adoption.shelter == self.request.user.shelter) or \
-               (adoption.user == self.request.user and adoption.status == 'PENDING')
+        if not (adoption.user == request.user and adoption.status == 'PENDING'):
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+
 
 # Comment Views
 class CreateCommentView(LoginRequiredMixin, CreateView):
@@ -186,90 +134,171 @@ class CreateCommentView(LoginRequiredMixin, CreateView):
     form_class = CommentForm
     template_name = 'project/comment_create.html'
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['pet'] = get_object_or_404(Pet, pk=self.kwargs['pet_id'])
+        return context
+    
     def form_valid(self, form):
+        # Using the authenticated user directly
         form.instance.user = self.request.user
         form.instance.pet = get_object_or_404(Pet, pk=self.kwargs['pet_id'])
+        form.instance.date_posted = timezone.now()
         return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse_lazy('pet', kwargs={'pk': self.kwargs['pet_id']})
 
-class DeleteCommentView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class DeleteCommentView(LoginRequiredMixin, DeleteView):
     model = Comment
     template_name = 'project/comment_delete.html'
     
-    def test_func(self):
+    def dispatch(self, request, *args, **kwargs):
         comment = self.get_object()
-        return self.request.user == comment.user
+        if request.user != comment.user:
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
     
     def get_success_url(self):
         return reverse_lazy('pet', kwargs={'pk': self.object.pet.pk})
-
+class UpdateCommentView(LoginRequiredMixin, UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = 'project/comment_edit.html'
+    
+    def dispatch(self, request, *args, **kwargs):
+        comment = self.get_object()
+        if request.user != comment.user:
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['pet'] = self.object.pet
+        return context
+    
+    def get_success_url(self):
+        return reverse_lazy('pet', kwargs={'pk': self.object.pet.id})
+    
 # Search Views
 class FilterPetPage(ListView):
     model = Pet
-    template_name = 'pets/search.html'
+    template_name = 'project/pets_list.html' 
     context_object_name = 'pets'
     paginate_by = 12
     
     def get_queryset(self):
-        query = self.request.GET.get('q')
+        query = self.request.GET.get('q', '')
+        pet_type = self.request.GET.get('pet_type', '')
+        shelter = self.request.GET.get('shelter', '')
+        min_age = self.request.GET.get('min_age')
+        max_age = self.request.GET.get('max_age')
+
+        queryset = Pet.objects.all()
+
         if query:
-            return Pet.objects.filter(
+            queryset = queryset.filter(
                 Q(name__icontains=query) |
                 Q(breed__icontains=query) |
                 Q(description__icontains=query)
             )
-        return Pet.objects.all()
+        
+        if pet_type:
+            queryset = queryset.filter(pet_type=pet_type)
+            
+        if shelter:
+            queryset = queryset.filter(shelter=shelter)
+            
+        if min_age:
+            queryset = queryset.filter(age__gte=min_age)
+
+        if max_age:
+            queryset = queryset.filter(age__lte=max_age)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['shelters'] = Shelter.objects.all()  # For shelter dropdown
+        # Preserve search parameters in pagination
+        context['current_type'] = self.request.GET.get('pet_type', '')
+        context['current_shelter'] = self.request.GET.get('shelter', '')
+        context['current_min_age'] = self.request.GET.get('min_age', '')
+        context['current_max_age'] = self.request.GET.get('max_age', '')
+        context['current_query'] = self.request.GET.get('q', '')
+        return context
 
 class FilterShelterPage(ListView):
     model = Shelter
-    template_name = 'shelters/search.html'
+    template_name = 'project/shelter_list.html'  # Change this to match your template path
     context_object_name = 'shelters'
     paginate_by = 12
     
     def get_queryset(self):
-        query = self.request.GET.get('q')
+        query = self.request.GET.get('q', '')
+        min_rating = self.request.GET.get('min_rating')
+        
+        queryset = Shelter.objects.all()
+
         if query:
-            return Shelter.objects.filter(
+            queryset = queryset.filter(
                 Q(name__icontains=query) |
                 Q(location__icontains=query) |
                 Q(description__icontains=query)
-            )
-        return Shelter.objects.all()
+            ) 
+        if min_rating:
+            queryset = queryset.filter(average_rating__gte=min_rating)
+            
+        return queryset.order_by('-average_rating')  # Sort by rating by default
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['current_rating'] = self.request.GET.get('min_rating', '')
+        context['current_query'] = self.request.GET.get('q', '')
+        return context
     
 
 class CreateShelterReviewView(LoginRequiredMixin, CreateView):
     model = ShelterReview
     form_class = ShelterReviewForm
-    template_name = 'shelters/reviews/create.html'
+    template_name = 'project/shelter_review_create.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['shelter'] = get_object_or_404(Shelter, pk=self.kwargs['shelter_id'])
+        return context
     
     def form_valid(self, form):
-        # Set the user and shelter
         form.instance.user = self.request.user
         form.instance.shelter = get_object_or_404(Shelter, pk=self.kwargs['shelter_id'])
         form.instance.date_posted = timezone.now()
-        
-        # Update shelter's average rating
         response = super().form_valid(form)
         self.update_shelter_rating(form.instance.shelter)
         return response
     
     def get_success_url(self):
         return reverse_lazy('shelter', kwargs={'pk': self.kwargs['shelter_id']})
-    
+        
     def update_shelter_rating(self, shelter):
-        # Calculate new average rating
         reviews = ShelterReview.objects.filter(shelter=shelter)
         avg_rating = reviews.aggregate(Avg('rating'))['rating__avg']
         shelter.average_rating = round(avg_rating) if avg_rating else 0
         shelter.save()
-
-class UpdateShelterReviewView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class UpdateShelterReviewView(LoginRequiredMixin, UpdateView):
     model = ShelterReview
     form_class = ShelterReviewForm
-    template_name = 'shelters/reviews/update.html'
+    template_name = 'project/shelter_review_edit.html'
     
-    def test_func(self):
+    def dispatch(self, request, *args, **kwargs):
         review = self.get_object()
-        return self.request.user == review.user
+        if request.user != review.user:
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['shelter'] = self.get_object().shelter
+        return context
     
     def form_valid(self, form):
         response = super().form_valid(form)
@@ -285,13 +314,21 @@ class UpdateShelterReviewView(LoginRequiredMixin, UserPassesTestMixin, UpdateVie
         shelter.average_rating = round(avg_rating) if avg_rating else 0
         shelter.save()
 
-class DeleteShelterReviewView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class DeleteShelterReviewView(LoginRequiredMixin, DeleteView):
     model = ShelterReview
-    template_name = 'shelters/reviews/delete.html'
+    template_name = 'project/shelter_review_delete.html'
     
-    def test_func(self):
+    def dispatch(self, request, *args, **kwargs):
         review = self.get_object()
-        return self.request.user == review.user
+        if request.user != review.user:
+            raise PermissionDenied
+        return super().dispatch(request, *args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['review'] = self.get_object()
+        context['shelter'] = self.get_object().shelter
+        return context
     
     def get_success_url(self):
         return reverse_lazy('shelter', kwargs={'pk': self.object.shelter.pk})

@@ -1,0 +1,53 @@
+{% extends 'project/base.html' %}
+{% load static %}
+
+{% block title %}Edit Review for {{ shelter.name }}{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="review-header">
+        <h2>Edit Your Review</h2>
+    </div>
+
+    <div class="review-form">
+        <form method="post">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="id_rating">Rating:</label>
+                <div class="rating-selector">
+                    {% for i in "12345" %}
+                        <input type="radio" name="rating" value="{{ forloop.counter }}" id="star{{ forloop.counter }}" 
+                               {% if form.rating.value == forloop.counter %}checked{% endif %} required>
+                        <label for="star{{ forloop.counter }}"><i class="fas fa-star"></i></label>
+                    {% endfor %}
+                </div>
+                {% if form.rating.errors %}
+                    <div class="form-errors">
+                        {% for error in form.rating.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_review_text">Your Review:</label>
+                <textarea name="review_text" id="id_review_text" class="form-control" rows="6">{{ form.review_text.value|default:'' }}</textarea>
+                {% if form.review_text.errors %}
+                    <div class="form-errors">
+                        {% for error in form.review_text.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-actions">
+                <a href="{% url 'shelter' pk=shelter.pk %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Update Review</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

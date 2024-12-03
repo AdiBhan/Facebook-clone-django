@@ -17,7 +17,8 @@ body {
 .container {
     max-width: 1300px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 10 40px;
+    overflow: hidden; 
 }
 
 /* Navigation */
@@ -44,13 +45,12 @@ body {
 .nav-links {
     float: right;
     list-style: none;
-
+    height:300px;
 }
 
 .nav-links li {
     display: inline-block;
     margin-left: 1.5rem;
-    
 }
 
 .nav-links a {
@@ -88,7 +88,9 @@ body {
     background-color: #3498db;
     color: white;
     text-align: center;
-    padding: 4rem 2rem;
+    padding: 30px;
+    height: 30rem;
+    margin-bottom: 10rem;
 }
 
 .hero h1 {
@@ -116,7 +118,7 @@ body {
 }
 
 .btn-secondary {
-    background-color: #2ecc71;
+    background-color: #6c757d;
     color: white;
 }
 
@@ -126,29 +128,56 @@ body {
 }
 
 /* Grid Layouts */
-.pet-grid, .shelter-grid {
+.pet-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(250px, 2fr));
     gap: 1.5rem;
     margin: 2rem 0;
+    overflow: hidden;
 }
 
 /* Cards */
-.pet-card, .shelter-card {
+.pet-card {
     background: white;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     overflow: hidden;
+    max-width: 100%;
+}
+
+.shelter-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    overflow: hidden;
+    padding: 1rem;
 }
 
 .pet-image img {
     width: 100%;
-    height: 200px;
+    height: 500px;
     object-fit: cover;
 }
 
-.pet-info, .shelter-card {
+.pet-info {
     padding: 1rem;
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.pet-info h2 {
+    margin-bottom: 1rem;
+}
+
+.pet-info p {
+    margin: 0.5rem 0;
+    color: #666;
+}
+
+.pet-info i {
+    width: 20px;
+    color: #3498db;
 }
 
 /* Messages */
@@ -205,14 +234,22 @@ footer {
     display: flex;
     gap: 1rem;
     flex: 1;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 .search-bar input[type="text"],
-.search-bar select {
-    padding: 0.8rem;
+.search-bar select,
+.search-inputs input[type="number"],
+.search-inputs select {
+    padding: 0.5rem;
     border: 1px solid #ddd;
     border-radius: 4px;
-    flex: 1;
+    min-width: 120px;
+}
+
+.search-inputs input[type="number"] {
+    width: 100px;
 }
 
 .shelter-info {
@@ -230,10 +267,10 @@ footer {
     color: #3498db;
 }
 
-.shelter-actions, .pet-actions {
-    margin-top: 1rem;
-    display: flex;
-    gap: 0.5rem;
+.shelter-actions,
+.pet-actions {
+    margin-top: 3rem;
+    gap: 1rem;
 }
 
 .pet-details {
@@ -281,4 +318,523 @@ footer {
     padding: 0.5rem 1rem;
     background: #f8f9fa;
     border-radius: 4px;
+}
+
+/* Detail pages shared styles */
+.detail-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* Pet Detail Page */
+.detail-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.detail-image img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.detail-info h1 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.action-buttons {
+    margin-top: 2rem;
+}
+
+.detail-description {
+    margin: 2rem 0;
+}
+
+/* Comments Section */
+.comments-section {
+    margin-top: 3rem;
+}
+
+.comment-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.comment {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.comment p {
+    margin: 0.5rem 0;
+    color: #333;
+    line-height: 1.5;
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.comment-author {
+    font-weight: bold;
+}
+
+.comment-date {
+    color: #666;
+}
+
+/* Shelter Detail Page */
+.shelter-header {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.shelter-rating {
+    margin: 1rem 0;
+}
+
+.shelter-rating .fa-star {
+    color: #ffd700;
+}
+
+.reviews-section {
+    margin-top: 3rem;
+}
+
+.reviews-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.review {
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.review-actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+/* Adoption Form */
+.adoption-header {
+    margin-bottom: 2rem;
+}
+
+.pet-summary {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 2rem;
+    margin: 2rem 0;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.pet-summary img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.adoption-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.form-group textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+.form-control {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.form-control:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.form-errors {
+    color: #dc3545;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+}
+
+/* Adoption List */
+.adoptions-list {
+    margin-top: 2rem;
+}
+
+.adoption-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.pet-info {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.pet-thumbnail {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.adoption-status {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.status-pending {
+    color: #856404;
+}
+
+.status-approved {
+    color: #155724;
+}
+
+.status-rejected {
+    color: #721c24;
+}
+
+.adoption-notes {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.no-adoptions {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: 8px;
+    margin-top: 2rem;
+}
+
+/* Login Styles */
+.login-container,
+.register-container {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.login-box,
+.register-box {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-box h2,
+.register-box h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #2c3e50;
+}
+
+.login-form .form-group,
+.register-form .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.login-form label,
+.register-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.login-form input[type="text"],
+.login-form input[type="password"],
+.register-form input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.login-form input:focus,
+.register-form input:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.login-form button,
+.register-form button {
+    width: 100%;
+    padding: 1rem;
+    margin-top: 1rem;
+    font-size: 1.1rem;
+}
+
+.help-text {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: #666;
+}
+
+.error-message {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.error-message p {
+    margin: 0.5rem 0;
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #eee;
+}
+
+.login-link a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+/* Additional Styles */
+.comment-to-delete,
+.adoption-summary {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.shelter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Comment Edit Page Styles */
+.comment-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.comment-header h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+}
+
+.pet-preview {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 1.5rem;
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.pet-image img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.pet-info h3 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.pet-details p {
+    margin: 0.5rem 0;
+    color: #666;
+}
+
+.pet-details i {
+    width: 20px;
+    color: #3498db;
+    margin-right: 0.5rem;
+}
+
+/* Review Form Styles */
+.review-header {
+    margin-bottom: 2rem;
+}
+
+.review-header h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+}
+
+.shelter-preview {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.shelter-info h3 {
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.shelter-details p {
+    margin: 0.5rem 0;
+    color: #666;
+}
+
+.shelter-details i {
+    width: 20px;
+    color: #3498db;
+    margin-right: 0.5rem;
+}
+
+.current-rating {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.current-rating .fa-star {
+    color: #ffd700;
+    margin: 0 2px;
+}
+
+.review-form {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.rating-selector {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.rating-selector input {
+    display: none;
+}
+
+.rating-selector label {
+    cursor: pointer;
+    color: #ddd;
+    font-size: 1.5rem;
+}
+
+.rating-selector label:hover,
+.rating-selector label:hover ~ label,
+.rating-selector input:checked ~ label {
+    color: #ffd700;
+}
+
+.logout-form {
+    margin: 0;
+    padding: 0;
+}
+
+.logout-form button {
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    padding: 12px 16px;
+    color: #333;
+    cursor: pointer;
+}
+
+.logout-form button:hover {
+    background-color: #f8f9fa;
 }

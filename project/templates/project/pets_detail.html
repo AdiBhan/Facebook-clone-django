@@ -1,0 +1,81 @@
+{% extends 'project/base.html' %}
+{% load static %}
+{% block title %}{{ pet.name }}{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+    <div class="detail-header">
+        <div class="detail-image">
+            {% if pet.image %}
+                 <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
+            {% else %}
+                <img src="{% static 'images/pet-placeholder.jpg' %}" alt="No image available">
+            {% endif %}
+        </div>
+        <div class="detail-info">
+            <h1>{{ pet.name }}</h1>
+            <div class="pet-details">
+                <p><i class="fas fa-paw"></i> {{ pet.get_pet_type_display }}</p>
+                <p><i class="fas fa-birthday-cake"></i> {{ pet.age }} years old</p>
+                <p><i class="fas fa-dog"></i> {{ pet.breed }}</p>
+            </div>
+            <div class="shelter-info">
+                <h3>Shelter Information</h3>
+                <p><i class="fas fa-home"></i> {{ pet.shelter.name }}</p>
+                <p><i class="fas fa-map-marker-alt"></i> {{ pet.shelter.location }}</p>
+                <p><i class="fas fa-phone"></i> {{ pet.shelter.contact_info }}</p>
+            </div>
+            {% if user.is_authenticated %}
+                <div class="action-buttons">
+                    <a href="{% url 'view_adoption' pet.id %}" class="btn btn-primary">
+                        <i class="fas fa-heart"></i> Adopt Me
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="detail-description">
+        <h2>About {{ pet.name }}</h2>
+        <p>{{ pet.description }}</p>
+    </div>
+
+    <div class="comments-section">
+        <h2>Comments</h2>
+        {% if user.is_authenticated %}
+            <form method="post" action="{% url 'create_comment' pet.id %}" class="comment-form">
+                {% csrf_token %}
+                {{ comment_form.as_p }}
+                <button type="submit" class="btn btn-primary">Add Comment</button>
+            </form>
+        {% endif %}
+
+        <div class="comments-list">
+            {% for comment in comments %}
+                <div class="comment">
+                    <div class="comment-header">
+                        <span class="comment-author">{{ comment.user.username }}</span>
+                        <span class="comment-date">{{ comment.date_posted|date:"M d, Y" }}</span>
+                    </div>
+                    <p class="comment-content">{{ comment.content }}</p>
+                    {% if user == comment.user %}
+                     
+                    
+                    
+                        <a href="{% url 'edit_comment' comment.id %}" class="btn btn-small">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a href="{% url 'delete_comment' comment.id %}" class="btn btn-small btn-danger">
+                            <i class="fas fa-trash"></i> Delete
+                        </a>
+                 
+                        
+                    {% endif %}
+                </div>
+            {% empty %}
+                <p class="no-comments">No comments yet. Be the first to comment!</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
