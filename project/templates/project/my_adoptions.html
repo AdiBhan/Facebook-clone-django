@@ -11,8 +11,8 @@
         {% for adoption in adoptions %}
             <div class="adoption-card">
                 <div class="pet-info">
-                    {% if adoption.pet.image %}
-                        <img src="{{ adoption.pet.image.url }}" alt="{{ adoption.pet.name }}" class="pet-thumbnail">
+                    {% if adoption.pet.image_url %}
+                        <img src="{{ adoption.pet.image_url }}" alt="{{ adoption.pet.name }}" class="pet-thumbnail">
                     {% endif %}
                     <div class="pet-details">
                         <h3>{{ adoption.pet.name }}</h3>

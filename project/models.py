@@ -33,7 +33,7 @@ class Pet(models.Model):
     age = models.IntegerField()  # Age
     address = models.CharField(max_length=255)  # Location
     breed = models.CharField(max_length=255)  # Breed
-    image = models.ImageField(max_length=255, upload_to='pet_images/')  # Photo
+    image_url = models.URLField(max_length=255) # Photos
     shelter = models.ForeignKey(Shelter, blank=True, on_delete=models.CASCADE)  # Shelter
     pet_type = models.TextField(max_length=10, choices=PET_TYPES)  # Type
     description = models.TextField()  # Details
