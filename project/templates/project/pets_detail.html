@@ -1,3 +1,7 @@
+
+ <!--  ./templates/project/pet_detail.html  -->
+
+
 {% extends 'project/base.html' %}
 {% load static %}
 {% block title %}{{ pet.name }}{% endblock %}
@@ -6,6 +10,7 @@
 <div class="detail-container">
     <div class="detail-header">
         <div class="detail-image">
+            <!-- Display pet image if available, otherwise show a placeholder -->
             {% if pet.image_url %}
                  <img src="{{ pet.image_url }}" alt="{{ pet.name }}">
             {% else %}
@@ -25,6 +30,7 @@
                 <p><i class="fas fa-map-marker-alt"></i> {{ pet.shelter.location }}</p>
                 <p><i class="fas fa-phone"></i> {{ pet.shelter.contact_info }}</p>
             </div>
+            <!-- Show adoption button only if the user is authenticated -->
             {% if user.is_authenticated %}
                 <div class="action-buttons">
                     <a href="{% url 'view_adoption' pet.id %}" class="btn btn-primary">
@@ -42,6 +48,7 @@
 
     <div class="comments-section">
         <h2>Comments</h2>
+        <!-- Display the comment form if the user is authenticated -->
         {% if user.is_authenticated %}
             <form method="post" action="{% url 'create_comment' pet.id %}" class="comment-form">
                 {% csrf_token %}
@@ -51,6 +58,7 @@
         {% endif %}
 
         <div class="comments-list">
+            <!-- Loop through all comments -->
             {% for comment in comments %}
                 <div class="comment">
                     <div class="comment-header">
@@ -58,21 +66,18 @@
                         <span class="comment-date">{{ comment.date_posted|date:"M d, Y" }}</span>
                     </div>
                     <p class="comment-content">{{ comment.content }}</p>
+                    <!-- Allow editing and deleting comments if the logged-in user is the comment's author -->
                     {% if user == comment.user %}
-                     
-                    
-                    
                         <a href="{% url 'edit_comment' comment.id %}" class="btn btn-small">
                             <i class="fas fa-edit"></i> Edit
                         </a>
                         <a href="{% url 'delete_comment' comment.id %}" class="btn btn-small btn-danger">
                             <i class="fas fa-trash"></i> Delete
                         </a>
-                 
-                        
                     {% endif %}
                 </div>
             {% empty %}
+                <!-- Show message if there are no comments -->
                 <p class="no-comments">No comments yet. Be the first to comment!</p>
             {% endfor %}
         </div>

@@ -1,40 +1,50 @@
-
- <!--  ./templates/project/shelters_report.html  -->
-
- {% extends 'project/base.html' %}
- {% load static %}
+{% extends 'project/base.html' %}
+{% load static %}
 
 {% block content %}
 <div class="analytics-container">
     <h1 class="report-title">Shelter System Analytics Report</h1>
+    <p class="report-description">
+        Explore key metrics about shelters, pet adoption trends, and actionable insights to help adopters and shelter administrators.
+    </p>
 
+    <!-- Shelter Statistics -->
     <div class="grid-container">
-        <!-- Shelter Statistics -->
         <div class="stats-card">
             <h2 class="stats-title">Shelter Statistics</h2>
             <div class="stats-value">{{ total_shelters }}</div>
             <p class="stats-label">Total Shelters</p>
             <div class="stats-value">{{ avg_shelter_rating|floatformat:1 }}</div>
-            <p class="stats-label">Average Rating</p>
+            <p class="stats-label">Average Shelter Rating</p>
+            <div class="stats-value">{{ max_shelter_rating }}</div>
+            <p class="stats-label">Highest Shelter Rating</p>
+            <div class="stats-value">{{ min_shelter_rating }}</div>
+            <p class="stats-label">Lowest Shelter Rating</p>
         </div>
-        
-        <!-- Pet Statistics -->
-        <div class="stats-card">
-            <h2 class="stats-title">Pet Statistics</h2>
-            <div class="stats-value">{{ total_pets }}</div>
-            <p class="stats-label">Total Pets</p>
-        </div>
+    </div>
 
-        <!-- Adoption Statistics -->
-        <div class="stats-card">
-            <h2 class="stats-title">Adoption Statistics</h2>
-            <div class="stats-value">{{ total_adoption_requests }}</div>
-            <p class="stats-label">Total Requests</p>
-            <div class="stats-value">{{ pending_requests }}</div>
-            <p class="stats-label">Pending Requests</p>
-            <div class="stats-value">{{ approved_requests }}</div>
-            <p class="stats-label">Approved Requests</p>
-        </div>
+    <!-- Pet Statistics -->
+    <div class="stats-card">
+        <h2 class="stats-title">Pet Statistics</h2>
+        <div class="stats-value">{{ total_pets }}</div>
+        <p class="stats-label">Total Pets</p>
+        <div class="stats-value">{{ available_pets }}</div>
+        <p class="stats-label">Available for Adoption</p>
+        {% if most_popular_pet_type %}
+        <div class="stats-value">{{ most_popular_pet_type.pet_type }}</div>
+        <p class="stats-label">Most Popular Pet Type</p>
+        {% endif %}
+    </div>
+
+    <!-- Adoption Statistics -->
+    <div class="stats-card">
+        <h2 class="stats-title">Adoption Statistics</h2>
+        <div class="stats-value">{{ total_adoption_requests }}</div>
+        <p class="stats-label">Total Requests</p>
+        <div class="stats-value">{{ pending_requests }}</div>
+        <p class="stats-label">Pending Requests ({{ pending_percentage|floatformat:1 }}%)</p>
+        <div class="stats-value">{{ approved_requests }}</div>
+        <p class="stats-label">Approved Requests</p>
     </div>
 
     <!-- Pet Distribution -->
@@ -49,7 +59,15 @@
             {% endfor %}
         </div>
     </div>
-        </div>
+
+    <!-- Shelter Occupancy -->
+    <div class="stats-card">
+        <h2 class="stats-title">Shelter Occupancy</h2>
+        <ul>
+            {% for shelter in shelter_occupancy %}
+            <li>{{ shelter.name }}: {{ shelter.current_occupancy }} pets ({{ shelter.capacity_utilization|floatformat:1 }}% capacity)</li>
+            {% endfor %}
+        </ul>
     </div>
 </div>
 {% endblock %}

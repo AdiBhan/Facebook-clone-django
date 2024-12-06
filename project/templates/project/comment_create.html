@@ -20,6 +20,7 @@
             <div class="form-group">
                 <label for="{{ form.content.id_for_label }}">Your Comment:</label>
                 {{ form.content }}
+                   <!-- If there are form errors, display them -->
                 {% if form.content.errors %}
                     <div class="form-errors">
                         {{ form.content.errors }}
@@ -27,6 +28,7 @@
                 {% endif %}
             </div>
             <div class="form-actions">
+                
                 <a href="{% url 'pet' pet.id %}" class="btn btn-secondary">Cancel</a>
                 <button type="submit" class="btn btn-primary">Post Comment</button>
             </div>

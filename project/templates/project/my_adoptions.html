@@ -1,3 +1,6 @@
+
+ <!--  ./templates/project/my_adoptions.html  -->
+
 {% extends 'project/base.html' %}
 {% load static %}
 
@@ -8,9 +11,11 @@
     <h1>My Adoption Requests</h1>
 
     <div class="adoptions-list">
+         <!-- Loop through all adoption requests -->
         {% for adoption in adoptions %}
             <div class="adoption-card">
                 <div class="pet-info">
+                     <!-- Check if the pet has an image URL -->
                     {% if adoption.pet.image_url %}
                         <img src="{{ adoption.pet.image_url }}" alt="{{ adoption.pet.name }}" class="pet-thumbnail">
                     {% endif %}
@@ -28,11 +33,13 @@
                     <p class="adoption-date">
                         Requested on: {{ adoption.date_requested|date:"F j, Y" }}
                     </p>
+                      <!-- Show the approval date if the adoption is approved -->
                     {% if adoption.status == 'APPROVED' %}
                         <p class="approval-date">
                             Approved on: {{ adoption.date_approved|date:"F j, Y" }}
                         </p>
                     {% endif %}
+                     <!-- Display adoption notes if they exist -->
                     {% if adoption.notes %}
                         <div class="adoption-notes">
                             <p>Your message:</p>
@@ -40,7 +47,7 @@
                         </div>
                     {% endif %}
                 </div>
-
+                <!-- Show the approval date if the adoption is pending -->
                 {% if adoption.status == 'PENDING' %}
                 <div class="adoption-actions">
                     <form method="post" action="{% url 'cancel_adoption' adoption.id %}">
@@ -51,6 +58,7 @@
                 {% endif %}
             </div>
         {% empty %}
+           <!-- Message to display if there are no adoption requests -->
             <div class="no-adoptions">
                 <p>You haven't made any adoption requests yet.</p>
                 <a href="{% url 'pets' %}" class="btn btn-primary">Browse Available Pets</a>

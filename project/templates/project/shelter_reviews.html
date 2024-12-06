@@ -1,73 +1,79 @@
 
  <!--  ./templates/project/shelter_reviews.html  -->
-
-{% extends 'project/base.html' %}
-{% load static %}
-
-{% block title %}Reviews for {{ shelter.name }}{% endblock %}
-
-{% block content %}
-<div class="detail-container">
-    <div class="shelter-header">
-        <h1>Reviews for {{ shelter.name }}</h1>
-        <div class="shelter-rating">
-            <div class="rating-summary">
-                <span class="average-rating">{{ shelter.average_rating }}/5</span>
-                {% for i in "12345" %}
-                    {% if forloop.counter <= shelter.average_rating %}
-                        <i class="fas fa-star"></i>
-                    {% else %}
-                        <i class="far fa-star"></i>
-                    {% endif %}
-                {% endfor %}
-                <span class="review-count">({{ reviews.count }} reviews)</span>
-            </div>
-            {% if user.is_authenticated %}
-                <a href="{% url 'create_shelter_review' shelter.id %}" class="btn btn-primary">
-                    <i class="fas fa-pen"></i> Write a Review
-                </a>
-            {% endif %}
-        </div>
-    </div>
-
-    <div class="reviews-container">
-        {% for review in reviews %}
-            <div class="review-card">
-                <div class="review-header">
-                    <div class="reviewer-info">
-                        <span class="reviewer-name">{{ review.user.username }}</span>
-                        <span class="review-date">{{ review.date_posted|date:"F j, Y" }}</span>
-                    </div>
-                    <div class="review-rating">
-                        {% for i in "12345" %}
-                            {% if forloop.counter <= review.rating %}
-                                <i class="fas fa-star"></i>
-                            {% else %}
-                                <i class="far fa-star"></i>
-                            {% endif %}
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="review-content">
-                    {{ review.review_text }}
-                </div>
-                {% if user == review.user %}
-                    <div class="review-actions">
-                        <a href="{% url 'update_shelter_review' review.id %}" class="btn btn-small">
-                            <i class="fas fa-edit"></i> Edit
-                        </a>
-                        <a href="{% url 'delete_shelter_review' review.id %}" class="btn btn-small btn-danger">
-                            <i class="fas fa-trash"></i> Delete
-                        </a>
-                    </div>
-                {% endif %}
-            </div>
-        {% empty %}
-            <div class="no-reviews">
-                <i class="fas fa-comments"></i>
-                <p>No reviews yet. Be the first to review this shelter!</p>
-            </div>
-        {% endfor %}
-    </div>
-</div>
-{% endblock %}
+ {% extends 'project/base.html' %}
+ {% load static %}
+ 
+ {% block title %}Reviews for {{ shelter.name }}{% endblock %}
+ 
+ {% block content %}
+ <div class="detail-container">
+     <div class="shelter-header">
+         <h1>Reviews for {{ shelter.name }}</h1>
+         <div class="shelter-rating">
+             <div class="rating-summary">
+                 <span class="average-rating">{{ shelter.average_rating }}/5</span>
+                 <!-- Loop through a fixed range of 1 to 5 to display the average star rating -->
+                 {% for i in "12345" %}
+                     {% if forloop.counter <= shelter.average_rating %}
+                         <i class="fas fa-star"></i>
+                     {% else %}
+                         <i class="far fa-star"></i>
+                     {% endif %}
+                 {% endfor %}
+                 <span class="review-count">({{ reviews.count }} reviews)</span>
+             </div>
+             <!-- Show the "Write a Review" button if the user is authenticated -->
+             {% if user.is_authenticated %}
+                 <a href="{% url 'create_shelter_review' shelter.id %}" class="btn btn-primary">
+                     <i class="fas fa-pen"></i> Write a Review
+                 </a>
+             {% endif %}
+         </div>
+     </div>
+ 
+     <div class="reviews-container">
+         <!-- Loop through all reviews for the shelter -->
+         {% for review in reviews %}
+             <div class="review-card">
+                 <div class="review-header">
+                     <div class="reviewer-info">
+                         <span class="reviewer-name">{{ review.user.username }}</span>
+                         <span class="review-date">{{ review.date_posted|date:"F j, Y" }}</span>
+                     </div>
+                     <div class="review-rating">
+                         <!-- Loop through a fixed range of 1 to 5 to display the review's star rating -->
+                         {% for i in "12345" %}
+                             {% if forloop.counter <= review.rating %}
+                                 <i class="fas fa-star"></i>
+                             {% else %}
+                                 <i class="far fa-star"></i>
+                             {% endif %}
+                         {% endfor %}
+                     </div>
+                 </div>
+                 <div class="review-content">
+                     {{ review.review_text }}
+                 </div>
+                 <!-- Allow users to edit or delete their own reviews -->
+                 {% if user == review.user %}
+                     <div class="review-actions">
+                         <a href="{% url 'update_shelter_review' review.id %}" class="btn btn-small">
+                             <i class="fas fa-edit"></i> Edit
+                         </a>
+                         <a href="{% url 'delete_shelter_review' review.id %}" class="btn btn-small btn-danger">
+                             <i class="fas fa-trash"></i> Delete
+                         </a>
+                     </div>
+                 {% endif %}
+             </div>
+         {% empty %}
+             <!-- Display this message if no reviews exist -->
+             <div class="no-reviews">
+                 <i class="fas fa-comments"></i>
+                 <p>No reviews yet. Be the first to review this shelter!</p>
+             </div>
+         {% endfor %}
+     </div>
+ </div>
+ {% endblock %}
+ 

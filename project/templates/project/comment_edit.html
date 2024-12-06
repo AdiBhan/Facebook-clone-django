@@ -22,6 +22,7 @@
             <div class="form-group">
                 <label for="id_content">Your Comment:</label>
                 <textarea name="content" id="id_content" class="form-control" rows="4">{{ form.content.value }}</textarea>
+                   <!-- If there are form errors, display them -->
                 {% if form.content.errors %}
                     <div class="form-errors">
                         {% for error in form.content.errors %}

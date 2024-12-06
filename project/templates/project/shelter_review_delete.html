@@ -1,34 +1,38 @@
 
  <!--  ./templates/project/shelter_review_delete.html  -->
 
-{% extends 'project/base.html' %}
-{% load static %}
-
-{% block title %}Delete Review - {{ shelter.name }}{% endblock %}
-
-{% block content %}
-<div class="detail-container">
-    <div class="review-header">
-        <h2>Delete Review</h2>
-    </div>
-
-    <div class="review-to-delete">
-      
-  
-    </div>
-
-    <div class="review-form">
-        <p class="mt-3">{{ review.review_text }}</p>
-        <p class="text-muted">Posted on: {{ review.date_posted }}</p>
-        <form method="post">
-            {% csrf_token %}
-            <p class="alert alert-warning"><i>Are you sure you want to delete this review? This action cannot be undone.</i></p>
-            
-            <div class="form-actions">
-                <a href="{% url 'shelter' pk=shelter.pk %}" class="btn btn-secondary">Cancel</a>
-                <button type="submit" class="btn btn-danger">Delete Review</button>
-            </div>
-        </form>
-    </div>
-</div>
-{% endblock %}
+ {% extends 'project/base.html' %}
+ {% load static %}
+ 
+ {% block title %}Delete Review - {{ shelter.name }}{% endblock %}
+ 
+ {% block content %}
+ <div class="detail-container">
+     <div class="review-header">
+         <h2>Delete Review</h2>
+     </div>
+ 
+     <div class="review-to-delete">
+         <!-- Display the text of the review to be deleted -->
+         <p class="mt-3">{{ review.review_text }}</p>
+         <!-- Display the date the review was posted -->
+         <p class="text-muted">Posted on: {{ review.date_posted }}</p>
+     </div>
+ 
+     <div class="review-form">
+         <form method="post">
+             {% csrf_token %}
+             <!-- Warning message to confirm the deletion -->
+             <p class="alert alert-warning"><i>Are you sure you want to delete this review? This action cannot be undone.</i></p>
+             
+             <div class="form-actions">
+                 <!-- Provide a cancel button to go back to the shelter page -->
+                 <a href="{% url 'shelter' pk=shelter.pk %}" class="btn btn-secondary">Cancel</a>
+                 <!-- Submit button to confirm and delete the review -->
+                 <button type="submit" class="btn btn-danger">Delete Review</button>
+             </div>
+         </form>
+     </div>
+ </div>
+ {% endblock %}
+ 

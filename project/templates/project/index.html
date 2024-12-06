@@ -21,6 +21,7 @@
 <section class="featured">
     <h2>Recent Additions</h2>
     <div class="pet-grid">
+           <!-- For all the recently added pets, show a card with their image, and description details , along with a link -->
         {% for pet in recent_pets %}
             <div class="pet-card">
                 <div class="pet-image">
@@ -39,10 +40,13 @@
 <section class="featured">
     <h2>Top Rated Shelters</h2>
     <div class="shelter-grid">
+
+        <!-- For all top-rated shelters -->
         {% for shelter in top_shelters %}
             <div class="shelter-card">
                 <h3>{{ shelter.name }}</h3>
                 <div class="shelter-rating">
+                     <!-- Loop through numbers (i.e ratings) 1 to 5  -->
                     {% for i in "12345" %}
                         {% if forloop.counter <= shelter.average_rating %}
                             <i class="fas fa-star"></i>

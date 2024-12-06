@@ -435,36 +435,69 @@ class DeleteShelterReviewView(LoginRequiredMixin, DeleteView):
         avg_rating = reviews.aggregate(Avg('rating'))['rating__avg']  # calculate aggregate of average ratings
         shelter.average_rating = round(avg_rating) if avg_rating else 0 # round rating to nearest whole number so it can fit in 1-5
         shelter.save() # save shelter data
+from django.db.models import Avg, Count,Max, Min
+from django.db import models
+
+
 class ShelterReportView(TemplateView):
     '''Generates comprehensive analytics report about shelter performance, pet adoption trends, 
     and overall system statistics'''
     template_name = 'project/shelters_report.html'  # template page which will be rendered
-     
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
+
         # Overall shelter statistics
-        context['total_shelters'] = Shelter.objects.count()
-        context['avg_shelter_rating'] = ShelterReview.objects.aggregate(
-            Avg('rating'))['rating__avg']
+        total_shelters = Shelter.objects.count()
+        avg_shelter_rating = ShelterReview.objects.aggregate(Avg('rating'))['rating__avg']
+        max_shelter_rating = ShelterReview.objects.aggregate(Max('rating'))['rating__max']
+        min_shelter_rating = ShelterReview.objects.aggregate(Min('rating'))['rating__min']
+
+        context.update({
+            'total_shelters': total_shelters,
+            'avg_shelter_rating': avg_shelter_rating,
+            'max_shelter_rating': max_shelter_rating,
+            'min_shelter_rating': min_shelter_rating,
+        })
 
         # Pet statistics
-        context['total_pets'] = Pet.objects.count()
-        context['pets_by_type'] = Pet.objects.values('pet_type').annotate(
-            count=Count('id')).order_by('-count')
-        
-        # Get adoption statistics through AdoptionRequest model
+        total_pets = Pet.objects.count()
+        pets_by_type = Pet.objects.values('pet_type').annotate(count=Count('id')).order_by('-count')
+        most_popular_pet_type = pets_by_type[0] if pets_by_type else None
+
+        context.update({
+            'total_pets': total_pets,
+            'pets_by_type': pets_by_type,
+            'most_popular_pet_type': most_popular_pet_type,
+        })
+
+        # Adoption statistics
         adoption_requests = AdoptionRequest.objects.all()
-        context['total_adoption_requests'] = adoption_requests.count()
-        context['pending_requests'] = adoption_requests.filter(
-            status='PENDING').count()
-        context['approved_requests'] = adoption_requests.filter(
-            status='APPROVED').count()
-        
-        # Calculate available pets (those without approved adoption requests)
+        total_adoption_requests = adoption_requests.count()
+        pending_requests = adoption_requests.filter(status='PENDING').count()
+        approved_requests = adoption_requests.filter(status='APPROVED').count()
+        pending_percentage = (pending_requests / total_adoption_requests * 100) if total_adoption_requests else 0
+
+        context.update({
+            'total_adoption_requests': total_adoption_requests,
+            'pending_requests': pending_requests,
+            'approved_requests': approved_requests,
+            'pending_percentage': pending_percentage,
+        })
+
+        # Available pets
         pets_with_approved_adoptions = AdoptionRequest.objects.filter(
             status='APPROVED').values_list('pet_id', flat=True)
-        context['available_pets'] = Pet.objects.exclude(
-            id__in=pets_with_approved_adoptions).count()
-        
-        return context # return updated context object
+        available_pets = Pet.objects.exclude(id__in=pets_with_approved_adoptions).count()
+
+        context['available_pets'] = available_pets
+
+        # Shelter occupancy (utilization rate)
+        shelters = Shelter.objects.annotate(
+            current_occupancy=Count('pet'),
+            capacity_utilization=100 * Count('pet') / models.F('capacity')
+        ).filter(capacity__gt=0).order_by('-capacity_utilization')
+
+        context['shelter_occupancy'] = shelters
+
+        return context

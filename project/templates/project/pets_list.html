@@ -1,87 +1,93 @@
  <!--  ./templates/project/pets_list.html  -->
+ {% extends 'project/base.html' %}
 
-{% extends 'project/base.html' %}
-
-{% block title %}Available Pets{% endblock %}
-
-{% block content %}
-<div class="page-header">
-    <h1>Available Pets</h1>
-    <div class="search-bar">
-    <form method="GET" action="{% url 'pet_search' %}">
-        <div class="search-inputs">
-            <input type="text" name="q" placeholder="Search pets..." value="{{ current_query }}">
-            
-            <select name="pet_type">
-                <option value="">All Types</option>
-                <option value="DOG" {% if current_type == 'DOG' %}selected{% endif %}>Dogs</option>
-                <option value="CAT" {% if current_type == 'CAT' %}selected{% endif %}>Cats</option>
-                <option value="OTHER" {% if current_type == 'OTHER' %}selected{% endif %}>Other</option>
-            </select>
-
-            <select name="shelter">
-                <option value="">All Shelters</option>
-                {% for shelter in shelters %}
-                    <option value="{{ shelter.id }}" {% if current_shelter == shelter.id|stringformat:"i" %}selected{% endif %}>
-                        {{ shelter.name }}
-                    </option>
-                {% endfor %}
-            </select>
-
-            <input type="number" name="min_age" placeholder="Min Age" value="{{ current_min_age }}" min="0">
-            <input type="number" name="max_age" placeholder="Max Age" value="{{ current_max_age }}" min="0">
-            
-            <button type="submit" class="btn btn-primary">
-                <i class="fas fa-search"></i> Search
-            </button>
-        </div>
-    </form>
-</div>
-</div>
-
-<div class="pet-grid">
-    {% for pet in pets %}
-        <div class="pet-card">
-            <div class="pet-image">
-                <img src="{{ pet.image_url }}" alt="{{ pet.name }}">
-            </div>
-            <div class="pet-info">
-                <h3>{{ pet.name }}</h3>
-           
-              
-                <div class="pet-actions">
-                    <p class="shelter-name">
-                        <i class="fas fa-home"></i> {{ pet.shelter.name }}
-                    </p>
-                    <a href="{% url 'pet' pet.id %}" class="btn btn-primary">View Details</a>
-                    {% if user.is_authenticated %}
-                        <a href="{% url 'view_adoption' pet.id %}" class="btn btn-secondary">Adopt Me</a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    {% empty %}
-        <div class="no-results">
-            <i class="fas fa-search"></i>
-            <p>No pets found matching your criteria.</p>
-        </div>
-    {% endfor %}
-</div>
-
-{% if is_paginated %}
-<div class="pagination">
-    {% if page_obj.has_previous %}
-        
-        <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-small">Previous</a>
-    {% endif %}
-
-    <span class="current-page">
-        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-    </span>
-
-    {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}" class="btn btn-small">Next</a>
-    {% endif %}
-</div>
-{% endif %}
-{% endblock %}
+ {% block title %}Available Pets{% endblock %}
+ 
+ {% block content %}
+ <div class="page-header">
+     <h1>Available Pets</h1>
+     <div class="search-bar">
+         <form method="GET" action="{% url 'pet_search' %}">
+             <div class="search-inputs">
+                 <input type="text" name="q" placeholder="Search pets..." value="{{ current_query }}">
+                 
+                 <select name="pet_type">
+                     <option value="">All Types</option>
+                     <!-- Check if the current type matches the option to mark it as selected -->
+                     <option value="DOG" {% if current_type == 'DOG' %}selected{% endif %}>Dogs</option>
+                     <option value="CAT" {% if current_type == 'CAT' %}selected{% endif %}>Cats</option>
+                     <option value="OTHER" {% if current_type == 'OTHER' %}selected{% endif %}>Other</option>
+                 </select>
+ 
+                 <select name="shelter">
+                     <option value="">All Shelters</option>
+                     <!-- Loop through all shelters to populate the dropdown options -->
+                     {% for shelter in shelters %}
+                         <!-- Check if the current shelter matches the option to mark it as selected -->
+                         <option value="{{ shelter.id }}" {% if current_shelter == shelter.id|stringformat:"i" %}selected{% endif %}>
+                             {{ shelter.name }}
+                         </option>
+                     {% endfor %}
+                 </select>
+ 
+                 <input type="number" name="min_age" placeholder="Min Age" value="{{ current_min_age }}" min="0">
+                 <input type="number" name="max_age" placeholder="Max Age" value="{{ current_max_age }}" min="0">
+                 
+                 <button type="submit" class="btn btn-primary">
+                     <i class="fas fa-search"></i> Search
+                 </button>
+             </div>
+         </form>
+     </div>
+ </div>
+ 
+ <div class="pet-grid">
+     <!-- Loop through all pets to display them in a grid -->
+     {% for pet in pets %}
+         <div class="pet-card">
+             <div class="pet-image">
+                 <img src="{{ pet.image_url }}" alt="{{ pet.name }}">
+             </div>
+             <div class="pet-info">
+                 <h3>{{ pet.name }}</h3>
+                 <div class="pet-actions">
+                     <p class="shelter-name">
+                         <i class="fas fa-home"></i> {{ pet.shelter.name }}
+                     </p>
+                     <a href="{% url 'pet' pet.id %}" class="btn btn-primary">View Details</a>
+                     <!-- Show "Adopt Me" button only if the user is authenticated -->
+                     {% if user.is_authenticated %}
+                         <a href="{% url 'view_adoption' pet.id %}" class="btn btn-secondary">Adopt Me</a>
+                     {% endif %}
+                 </div>
+             </div>
+         </div>
+     {% empty %}
+         <!-- Message to display if no pets match the search criteria -->
+         <div class="no-results">
+             <i class="fas fa-search"></i>
+             <p>No pets found matching your criteria.</p>
+         </div>
+     {% endfor %}
+ </div>
+ 
+ <!-- Pagination controls -->
+ {% if is_paginated %}
+ <div class="pagination">
+     <!-- Show "Previous" button only if there is a previous page -->
+     {% if page_obj.has_previous %}
+         <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-small">Previous</a>
+     {% endif %}
+ 
+     <span class="current-page">
+         Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+     </span>
+ 
+     <!-- Show "Next" button only if there is a next page -->
+     {% if page_obj.has_next %}
+         <a href="?page={{ page_obj.next_page_number }}" class="btn btn-small">Next</a>
+     {% endif %}
+ </div>
+ {% endif %}
+ {% endblock %}
+ 

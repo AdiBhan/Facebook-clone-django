@@ -1,3 +1,6 @@
+
+ <!--  ./templates/project/adoption_create.html  -->
+
 {% extends 'project/base.html' %}
 {% load static %}
 
@@ -10,12 +13,15 @@
         
         <div class="pet-summary">
             <div class="pet-image">
+                <!-- Display the pet's image if available, else show backup image -->
                 {% if pet.image %}
                     <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
                 {% else %}
                     <img src="{% static 'images/pet-placeholder.jpg' %}" alt="No image available">
                 {% endif %}
             </div>
+
+               <!-- Display pet details -->
             <div class="pet-info">
                 <h2>{{ pet.name }}</h2>
                 <p><i class="fas fa-paw"></i> {{ pet.get_pet_type_display }}</p>
@@ -27,12 +33,15 @@
     </div>
 
     <div class="adoption-form">
+         <!-- Adoption form where users can submit their request -->
         <h2>Adoption Request</h2>
         <form method="post">
             {% csrf_token %}
             <div class="form-group">
                 <label for="{{ form.notes.id_for_label }}">Why would you like to adopt {{ pet.name }}?</label>
                 {{ form.notes }}
+
+                <!-- If there are form errors, display them -->
                 {% if form.notes.errors %}
                     <div class="form-errors">
                         {{ form.notes.errors }}

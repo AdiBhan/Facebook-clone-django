@@ -13,6 +13,9 @@
 </head>
 <body>
     <header>
+
+
+              <!-- Display navigation bar -->
         <nav class="navbar">
             <div class="nav-brand">
                 <a href="{% url 'index' %}">
@@ -20,6 +23,7 @@
                     <span>Pawmate | Home </span>
                 </a>
             </div>
+
             <ul class="nav-links">
                 <li><a href="{% url 'pets' %}">Pets</a></li>
                 <li><a href="{% url 'shelters' %}">Shelters</a></li>
@@ -55,21 +59,14 @@
         </nav>
     </header>
 
+     <!-- Main content shown for each page (login, signup, homepage, pets listing, shelter listing, adoption, etc) -->
     <main class="container">
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.tags }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+           
 
         {% block content %}
         {% endblock %}
     </main>
-
+ <!-- Footer at bottom !--->
     <footer>
         <div class="container">
             <p>&copy; 2024 PetMate. All rights reserved.</p>

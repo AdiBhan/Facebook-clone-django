@@ -1,3 +1,6 @@
+
+ <!--  ./templates/project/adoption_delte.html  -->
+
 {% extends 'project/base.html' %}
 {% load static %}
 {% block title %}Cancel Adoption Request{% endblock %}
@@ -12,12 +15,14 @@
     <div class="adoption-summary">
         <div class="pet-summary">
             <div class="pet-image">
+                   <!-- Display the pet's image if available, else show backup image -->
                 {% if adoption_request.pet.image %}
                     <img src="{{ adoption_request.pet.image.url }}" alt="{{ adoption_request.pet.name }}">
                 {% else %}
                     <img src="{% static 'images/pet-placeholder.jpg' %}" alt="No image available">
                 {% endif %}
             </div>
+                  <!-- Display pet details -->
             <div class="pet-info">
                 <h2>{{ adoption_request.pet.name }}</h2>
                 <p><i class="fas fa-paw"></i> {{ adoption_request.pet.get_pet_type_display }}</p>

@@ -1,5 +1,5 @@
  <!--  ./templates/project/shelter_review_create.html  -->
-{% extends 'project/base.html' %}
+ {% extends 'project/base.html' %}
 {% load static %}
 
 {% block title %}Review {{ shelter.name }}{% endblock %}
@@ -8,8 +8,6 @@
 <div class="detail-container">
     <div class="review-header">
         <h2>Write a Review</h2>
-
-    
     </div>
 
     <div class="review-form">
@@ -19,12 +17,14 @@
             <div class="form-group">
                 <label for="id_rating">Rating:</label>
                 <div class="rating-selector">
+                    <!-- Loop through a fixed range of 1 to 5 for the star rating -->
                     {% for i in "12345" %}
                         <input type="radio" name="rating" value="{{ forloop.counter }}" id="star{{ forloop.counter }}" 
                                {% if form.rating.value == forloop.counter %}checked{% endif %} required>
                         <label for="star{{ forloop.counter }}"><i class="fas fa-star"></i></label>
                     {% endfor %}
                 </div>
+                <!-- Display error messages if the rating field has validation errors -->
                 {% if form.rating.errors %}
                     <div class="form-errors">
                         {% for error in form.rating.errors %}
@@ -38,6 +38,7 @@
                 <label for="id_review_text">Your Review:</label>
                 <textarea name="review_text" id="id_review_text" class="form-control" rows="6" 
                           placeholder="Share your experience with this shelter...">{{ form.review_text.value|default:'' }}</textarea>
+                <!-- Display error messages if the review text field has validation errors -->
                 {% if form.review_text.errors %}
                     <div class="form-errors">
                         {% for error in form.review_text.errors %}

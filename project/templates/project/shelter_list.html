@@ -1,6 +1,6 @@
  <!--  ./templates/project/shelter_list.html  -->
- 
-{% extends 'project/base.html' %}
+ {% extends 'project/base.html' %}
+
 {% load static %}
 {% block title %}Shelters{% endblock %}
 
@@ -14,6 +14,7 @@
                 
                 <select name="min_rating">
                     <option value="">All Ratings</option>
+                    <!-- Set the selected option based on the current rating filter -->
                     <option value="5" {% if current_rating == '5' %}selected{% endif %}>5 Stars</option>
                     <option value="4" {% if current_rating == '4' %}selected{% endif %}>4+ Stars</option>
                     <option value="3" {% if current_rating == '3' %}selected{% endif %}>3+ Stars</option>
@@ -30,11 +31,14 @@
 </div>
 
 <div class="shelter-grid">
+    <!-- Loop through all shelters to display them -->
     {% for shelter in shelters %}
         <div class="shelter-card">
             <h3>{{ shelter.name }}</h3>
             <div class="shelter-rating">
+                <!-- Loop through a fixed range of 1 to 5 for displaying star ratings -->
                 {% for i in "12345" %}
+                    <!-- Display filled stars up to the shelter's average rating -->
                     {% if forloop.counter <= shelter.average_rating %}
                         <i class="fas fa-star"></i>
                     {% else %}
@@ -52,6 +56,7 @@
             </div>
         </div>
     {% empty %}
+        <!-- Display this message if no shelters match the search criteria -->
         <div class="no-results">
             <i class="fas fa-search"></i>
             <p>No shelters found.</p>
@@ -59,8 +64,10 @@
     {% endfor %}
 </div>
 
+<!-- Display pagination controls if the list is paginated -->
 {% if is_paginated %}
 <div class="pagination">
+    <!-- Show "First" and "Previous" buttons if there is a previous page -->
     {% if page_obj.has_previous %}
         <a href="?page=1" class="btn btn-small">&laquo; First</a>
         <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-small">Previous</a>
@@ -70,6 +77,7 @@
         Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
     </span>
 
+    <!-- Show "Next" and "Last" buttons if there is a next page -->
     {% if page_obj.has_next %}
         <a href="?page={{ page_obj.next_page_number }}" class="btn btn-small">Next</a>
         <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-small">Last &raquo;</a>
