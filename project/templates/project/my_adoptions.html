@@ -16,9 +16,9 @@
             <div class="adoption-card">
                 <div class="pet-info">
                      <!-- Check if the pet has an image URL -->
-                    {% if adoption.pet.image_url %}
-                        <img src="{{ adoption.pet.image_url }}" alt="{{ adoption.pet.name }}" class="pet-thumbnail">
-                    {% endif %}
+                     {% if adoption.pet.image_url %}
+                     <img src="{{ adoption.pet.image_url }}" alt="{{ adoption.pet.name }}" class="pet-thumbnail">
+                 {% endif %}
                     <div class="pet-details">
                         <h3>{{ adoption.pet.name }}</h3>
                         <p>{{ adoption.pet.breed }} • {{ adoption.pet.age }} years old</p>

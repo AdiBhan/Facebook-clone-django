@@ -14,8 +14,8 @@
         <div class="pet-summary">
             <div class="pet-image">
                 <!-- Display the pet's image if available, else show backup image -->
-                {% if pet.image %}
-                    <img src="{{ pet.image.url }}" alt="{{ pet.name }}">
+                {% if pet.image_url %}
+                    <img src="{{ pet.image_url }}" alt="{{ pet.name }}">
                 {% else %}
                     <img src="{% static 'images/pet-placeholder.jpg' %}" alt="No image available">
                 {% endif %}
