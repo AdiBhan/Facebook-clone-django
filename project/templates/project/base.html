@@ -16,47 +16,42 @@
 
 
               <!-- Display navigation bar -->
-        <nav class="navbar">
-            <div class="nav-brand">
-                <a href="{% url 'index' %}">
-                    <i class="fas fa-paw"></i>
-                    <span>Pawmate | Home </span>
-                </a>
-            </div>
+              <nav class="navbar">
+                <div class="nav-brand">
+                    <a href="{% url 'index' %}">
+                        <i class="fas fa-paw"></i>
+                        <span>PetMate</span>
+                    </a>
+                </div>
+            
+                <ul class="nav-links">
+                    <li><a href="{% url 'pets' %}"><i class="fas fa-paw"></i> Find a Pet</a></li>
+                    <li><a href="{% url 'shelters' %}"><i class="fas fa-home"></i> Our Shelters</a></li>
+                    <li><a href="{% url 'shelter_report' %}"><i class="fas fa-chart-bar"></i> Analytics Report</a></li>
 
-            <ul class="nav-links">
-                <li><a href="{% url 'pets' %}">Pets</a></li>
-                <li><a href="{% url 'shelters' %}">Shelters</a></li>
-                <li><a href="{% url 'shelter_report' %}">View Site Stats/Report</a></li>
-                {% if user.is_authenticated %}
-                    {% if user.is_shelter_employee %}
-                        <li><a href="{% url 'view_adoptions' %}">Manage Adoptions</a></li>
-                       
+                       <!-- If user is authenitcated, show adoption requests tab else show login and sign up buttons  -->
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'view_my_adoptions' %}"><i class="fas fa-heart"></i> My Adoption Requests </a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle">
+                                <i class="fas fa-user-circle"></i>
+                                {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <form method="post" action="{% url 'logout' %}" class="logout-form">
+                                        {% csrf_token %}
+                                        <button type="submit"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
                     {% else %}
-                        <li><a href="{% url 'view_my_adoptions' %}">My Adoptions</a></li>
+                        <li><a href="{% url 'login' %}" class="btn btn-primary"><i class="fas fa-sign-in-alt"></i> Sign In</a></li>
+                        <li><a href="{% url 'register' %}" class="btn btn-secondary"><i class="fas fa-user-plus"></i> Join Now</a></li>
                     {% endif %}
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle">
-                            <i class="fas fa-user-circle"></i>
-                            {{ user.username }}
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <form method="post" action="{% url 'logout' %}" class="logout-form">
-                                    {% csrf_token %}
-                                    <button type="submit">Logout</button>
-                                </form>
-                            </li>
-                        </ul>
-                    </li>
-                {% else %}
-                    <li><a href="{% url 'login' %}" class="btn btn-primary">Login</a></li>
-                    <li><a href="{% url 'register' %}" class="btn btn-secondary">Register</a></li>
-                    
-                    
-                {% endif %}
-            </ul>
-        </nav>
+                </ul>
+            </nav>
     </header>
 
      <!-- Main content shown for each page (login, signup, homepage, pets listing, shelter listing, adoption, etc) -->

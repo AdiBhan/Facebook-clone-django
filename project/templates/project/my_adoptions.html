@@ -22,13 +22,13 @@
                     <div class="pet-details">
                         <h3>{{ adoption.pet.name }}</h3>
                         <p>{{ adoption.pet.breed }} • {{ adoption.pet.age }} years old</p>
-                        <p class="shelter-name">{{ adoption.pet.shelter.name }}</p>
+                        <p class="shelter-name">From: {{ adoption.pet.shelter.name }}</p>
                     </div>
                 </div>
 
                 <div class="adoption-details">
                     <p class="adoption-status status-{{ adoption.status|lower }}">
-                        Status: {{ adoption.status }}
+                        Application Status: {{ adoption.status }}
                     </p>
                     <p class="adoption-date">
                         Requested on: {{ adoption.date_requested|date:"F j, Y" }}
@@ -42,7 +42,7 @@
                      <!-- Display adoption notes if they exist -->
                     {% if adoption.notes %}
                         <div class="adoption-notes">
-                            <p>Your message:</p>
+                            Your Application Message:
                             <p>{{ adoption.notes }}</p>
                         </div>
                     {% endif %}

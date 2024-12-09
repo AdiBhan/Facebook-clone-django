@@ -1,3 +1,5 @@
+# views.py 
+
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect
@@ -438,21 +440,23 @@ class DeleteShelterReviewView(LoginRequiredMixin, DeleteView):
 from django.db.models import Avg, Count,Max, Min
 from django.db import models
 
-
 class ShelterReportView(TemplateView):
-    '''Generates comprehensive analytics report about shelter performance, pet adoption trends, 
-    and overall system statistics'''
+    '''ShelterReportView class uses TemplateView to generate comprehensive analytics report about shelter performance.
+    Provides detailed statistics about shelters, pets, adoptions, and system metrics'''
     template_name = 'project/shelters_report.html'  # template page which will be rendered
 
     def get_context_data(self, **kwargs):
+        '''get_context_data method aggregates various statistics and metrics for the report.
+        Calculates shelter ratings, pet statistics, adoption metrics, and capacity utilization'''
         context = super().get_context_data(**kwargs)
 
         # Overall shelter statistics
-        total_shelters = Shelter.objects.count()
-        avg_shelter_rating = ShelterReview.objects.aggregate(Avg('rating'))['rating__avg']
-        max_shelter_rating = ShelterReview.objects.aggregate(Max('rating'))['rating__max']
-        min_shelter_rating = ShelterReview.objects.aggregate(Min('rating'))['rating__min']
+        total_shelters = Shelter.objects.count()  # gets total number of shelters
+        avg_shelter_rating = ShelterReview.objects.aggregate(Avg('rating'))['rating__avg']  # calculates average rating across all shelters
+        max_shelter_rating = ShelterReview.objects.aggregate(Max('rating'))['rating__max']  # finds highest shelter rating
+        min_shelter_rating = ShelterReview.objects.aggregate(Min('rating'))['rating__min']  # finds lowest shelter rating
 
+        # Add shelter statistics to context
         context.update({
             'total_shelters': total_shelters,
             'avg_shelter_rating': avg_shelter_rating,
@@ -461,10 +465,11 @@ class ShelterReportView(TemplateView):
         })
 
         # Pet statistics
-        total_pets = Pet.objects.count()
-        pets_by_type = Pet.objects.values('pet_type').annotate(count=Count('id')).order_by('-count')
-        most_popular_pet_type = pets_by_type[0] if pets_by_type else None
+        total_pets = Pet.objects.count()  # gets total number of pets in system
+        pets_by_type = Pet.objects.values('pet_type').annotate(count=Count('id')).order_by('-count')  # counts pets by type, ordered by most common
+        most_popular_pet_type = pets_by_type[0] if pets_by_type else None  # identifies most common pet type
 
+        # Add pet statistics to context
         context.update({
             'total_pets': total_pets,
             'pets_by_type': pets_by_type,
@@ -472,12 +477,14 @@ class ShelterReportView(TemplateView):
         })
 
         # Adoption statistics
-        adoption_requests = AdoptionRequest.objects.all()
-        total_adoption_requests = adoption_requests.count()
-        pending_requests = adoption_requests.filter(status='PENDING').count()
-        approved_requests = adoption_requests.filter(status='APPROVED').count()
+        adoption_requests = AdoptionRequest.objects.all()  # gets all adoption requests
+        total_adoption_requests = adoption_requests.count()  # counts total requests
+        pending_requests = adoption_requests.filter(status='PENDING').count()  # counts pending requests
+        approved_requests = adoption_requests.filter(status='APPROVED').count()  # counts approved requests
+        # Calculates percentage of requests that are pending
         pending_percentage = (pending_requests / total_adoption_requests * 100) if total_adoption_requests else 0
 
+        # Add adoption statistics to context
         context.update({
             'total_adoption_requests': total_adoption_requests,
             'pending_requests': pending_requests,
@@ -485,19 +492,19 @@ class ShelterReportView(TemplateView):
             'pending_percentage': pending_percentage,
         })
 
-        # Available pets
+        # Available pets calculation
         pets_with_approved_adoptions = AdoptionRequest.objects.filter(
-            status='APPROVED').values_list('pet_id', flat=True)
-        available_pets = Pet.objects.exclude(id__in=pets_with_approved_adoptions).count()
+            status='APPROVED').values_list('pet_id', flat=True)  # gets IDs of pets with approved adoptions
+        available_pets = Pet.objects.exclude(id__in=pets_with_approved_adoptions).count()  # counts pets without approved adoptions
 
         context['available_pets'] = available_pets
 
-        # Shelter occupancy (utilization rate)
+        # Shelter occupancy calculations
         shelters = Shelter.objects.annotate(
-            current_occupancy=Count('pet'),
-            capacity_utilization=100 * Count('pet') / models.F('capacity')
-        ).filter(capacity__gt=0).order_by('-capacity_utilization')
+            current_occupancy=Count('pet'),  # counts current number of pets in each shelter
+            capacity_utilization=100 * Count('pet') / models.F('capacity')  # calculates percentage of capacity used
+        ).filter(capacity__gt=0).order_by('-capacity_utilization')  # filters out zero-capacity shelters, orders by utilization
 
         context['shelter_occupancy'] = shelters
 
-        return context
+        return context  # returns complete context with all statistics
