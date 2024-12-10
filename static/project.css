@@ -83,7 +83,11 @@ body {
     display: block;
 }
 
-
+.unique_buttons .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;     
+    line-height: 1.5;        
+}
 .hero {
     background: linear-gradient(135deg, #3498db, #2980b9, #1abc9c);
     padding: 5rem 2rem;

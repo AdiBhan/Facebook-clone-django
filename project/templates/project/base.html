@@ -47,8 +47,8 @@
                             </ul>
                         </li>
                     {% else %}
-                        <li><a href="{% url 'login' %}" class="btn btn-primary"><i class="fas fa-sign-in-alt"></i> Sign In</a></li>
-                        <li><a href="{% url 'register' %}" class="btn btn-secondary"><i class="fas fa-user-plus"></i> Join Now</a></li>
+                    <li class="unique_buttons"><a href="{% url 'login' %}" class="btn btn-primary"><i class="fas fa-sign-in-alt"></i> Login</a></li>
+                    <li class="unique_buttons"><a href="{% url 'register' %}" class="btn btn-secondary"><i class="fas fa-user-plus"></i> Register</a></li>
                     {% endif %}
                 </ul>
             </nav>

@@ -1,4 +1,5 @@
-# views.py 
+# project/views.py
+
 
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -10,6 +11,8 @@ from .models import Shelter, Pet, AdoptionRequest, Comment, ShelterReview
 from .forms import AdoptionRequestForm, CommentForm, ShelterReviewForm, UserRegistrationForm
 from django.utils import timezone
 from django.contrib.auth import login
+from django.db.models import Avg, Count,Max, Min
+from django.db import models
 class RegisterView(CreateView):
     ''' RegisterView class uses CreateView to render register page and handle user submission redirecting them to the default homepage afterwards
     and checking logging with form_valid() helper method'''
@@ -437,9 +440,7 @@ class DeleteShelterReviewView(LoginRequiredMixin, DeleteView):
         avg_rating = reviews.aggregate(Avg('rating'))['rating__avg']  # calculate aggregate of average ratings
         shelter.average_rating = round(avg_rating) if avg_rating else 0 # round rating to nearest whole number so it can fit in 1-5
         shelter.save() # save shelter data
-from django.db.models import Avg, Count,Max, Min
-from django.db import models
-
+        
 class ShelterReportView(TemplateView):
     '''ShelterReportView class uses TemplateView to generate comprehensive analytics report about shelter performance.
     Provides detailed statistics about shelters, pets, adoptions, and system metrics'''
@@ -508,3 +509,5 @@ class ShelterReportView(TemplateView):
         context['shelter_occupancy'] = shelters
 
         return context  # returns complete context with all statistics
+    
+    
